@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AGENT_SUDO // AUTO_SUBMIT</title>
+<title>AGENT_SUDO // AUTO_FILL</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#02040a;--bg2:#05080f;--panel:#0a1120;--panel2:#0d1626;
@@ -14,8 +14,8 @@
   --mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Inter',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative}
-#matrix{position:fixed;inset:0;z-index:0;opacity:.12;pointer-events:none}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+#matrix{position:fixed;inset:0;z-index:0;opacity:.1;pointer-events:none}
 .scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,255,163,.015) 0px,rgba(0,255,163,.015) 1px,transparent 1px,transparent 3px);mix-blend-mode:overlay}
 body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(700px 400px at 10% -10%,rgba(0,255,163,.13),transparent 60%),
@@ -47,20 +47,18 @@ a{color:var(--accent2);text-decoration:none}
   font-family:var(--mono);font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid transparent;
   transition:all .18s;white-space:nowrap;user-select:none;letter-spacing:.3px}
 .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;box-shadow:0 4px 18px -6px rgba(0,255,163,.7)}
-.btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 8px 26px -6px rgba(0,255,163,.95)}
+.btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .btn.outline{background:transparent;color:var(--accent);border-color:rgba(0,255,163,.4)}
-.btn.outline:hover{background:rgba(0,255,163,.08);border-color:var(--accent);box-shadow:0 0 14px rgba(0,255,163,.3)}
+.btn.outline:hover{background:rgba(0,255,163,.08);border-color:var(--accent)}
 .btn.ghost{background:var(--panel);color:var(--muted);border-color:var(--border)}
 .btn.ghost:hover{color:var(--text);border-color:var(--border2);background:var(--panel2)}
 .btn.danger{color:var(--danger);border-color:rgba(255,61,110,.35)}
 .btn.danger:hover{background:rgba(255,61,110,.08);border-color:var(--danger)}
-.btn.ok{color:var(--ok);border-color:rgba(0,255,136,.4)}
-.btn.ok:hover{background:rgba(0,255,136,.08);border-color:var(--ok)}
 .btn.small{padding:7px 12px;font-size:11.5px}
 .btn.full{width:100%}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
-.layout{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:22px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
+.layout{display:grid;grid-template-columns:440px 1fr;gap:20px;padding:22px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
 @media(max-width:980px){.layout{grid-template-columns:1fr}}
 
 .card{background:linear-gradient(180deg,rgba(10,17,32,.92),rgba(5,8,15,.92));
@@ -69,7 +67,7 @@ a{color:var(--accent2);text-decoration:none}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.55}
 .card h2{font-size:13px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);letter-spacing:.6px;text-transform:uppercase;color:var(--text)}
+  font-family:var(--mono);letter-spacing:.6px;text-transform:uppercase}
 .card h2::before{content:'//';color:var(--accent);font-weight:700;text-shadow:0 0 8px var(--accent)}
 .blink{display:inline-block;width:7px;height:13px;background:var(--accent);margin-left:2px;
   animation:blink 1s steps(2) infinite;vertical-align:middle;box-shadow:0 0 8px var(--accent)}
@@ -82,39 +80,36 @@ a{color:var(--accent2);text-decoration:none}
 .field input,.field textarea,.field select{background:var(--bg2);border:1px solid var(--border);border-radius:9px;
   padding:11px 13px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:all .16s;width:100%}
 .field textarea{resize:vertical;min-height:180px;white-space:pre;line-height:1.65}
-.field input:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,255,163,.12),0 0 18px -4px rgba(0,255,163,.4)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,255,163,.12),0 0 18px -4px rgba(0,255,163,.4)}
 .field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%2300ffa3' stroke-width='1.5' fill='none'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row .spacer{flex:1}
 .hint{font-size:11px;color:var(--dim);font-family:var(--mono);line-height:1.7}
 .hint code{background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--accent);border:1px solid var(--border)}
+.hint b{color:var(--muted)}
 
-/* ENTRY LIST */
-.entry-list{display:flex;flex-direction:column;gap:9px;max-height:65vh;overflow-y:auto;padding-right:5px;margin-top:12px}
-.entry{background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
-  border:1px solid var(--border);border-radius:11px;padding:13px;transition:all .2s;position:relative;overflow:hidden;
-  animation:slideIn .3s ease both}
+/* URL LIST */
+.url-list{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow-y:auto;padding-right:5px}
+.url-item{background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
+  border:1px solid var(--border);border-radius:10px;padding:12px;transition:all .2s;position:relative;
+  animation:slideIn .3s ease both;overflow:hidden}
 @keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.entry:hover{border-color:var(--border2);transform:translateY(-1px)}
-.entry::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+.url-item:hover{border-color:var(--border2);transform:translateY(-1px)}
+.url-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
   background:linear-gradient(180deg,var(--accent),transparent);opacity:.7}
-.entry.submitting::before{background:linear-gradient(180deg,var(--warn),transparent);animation:subBlink 1s infinite}
-.entry.ok::before{background:linear-gradient(180deg,var(--ok),transparent)}
-.entry.fail::before{background:linear-gradient(180deg,var(--danger),transparent)}
-@keyframes subBlink{0%,100%{opacity:.7}50%{opacity:.2}}
-.entry-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.entry-tutor{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;
-  background:rgba(0,255,163,.12);color:var(--accent);border:1px solid rgba(0,255,163,.3);text-shadow:0 0 8px rgba(0,255,163,.5)}
-.entry-status{margin-left:auto;font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:5px;
+.url-item.opened{opacity:.5}
+.url-item.opened::before{background:linear-gradient(180deg,var(--ok),transparent)}
+.url-head{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+.url-date{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);
+  text-shadow:0 0 8px rgba(0,255,163,.5);letter-spacing:.5px}
+.url-meta{font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:5px;
   background:var(--bg2);border:1px solid var(--border);color:var(--muted)}
-.entry-status.ok{color:var(--ok);border-color:rgba(0,255,136,.3)}
-.entry-status.fail{color:var(--danger);border-color:rgba(255,61,110,.3)}
-.entry-status.submitting{color:var(--warn);border-color:rgba(255,176,32,.3)}
-.entry-text{font-family:var(--mono);font-size:11.5px;color:#c8d6ee;background:#02050b;border-radius:7px;
-  padding:10px;white-space:pre-wrap;word-break:break-word;max-height:100px;overflow-y:auto;
-  margin-bottom:9px;border:1px solid var(--border);line-height:1.6}
-.entry-actions{display:flex;gap:6px;flex-wrap:wrap}
+.url-num{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.url-actions{display:flex;gap:6px;flex-wrap:wrap}
 
 .empty{text-align:center;padding:50px 20px;border:1px dashed var(--border2);border-radius:13px;background:rgba(10,17,32,.4)}
 .empty .ei{font-size:44px;margin-bottom:10px;opacity:.85;filter:drop-shadow(0 0 18px rgba(0,255,163,.4))}
@@ -125,34 +120,18 @@ a{color:var(--accent2);text-decoration:none}
 .stat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center}
 .stat .n{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--accent);text-shadow:0 0 12px rgba(0,255,163,.5)}
 .stat .l{font-size:9.5px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-top:2px}
-.stat.ok .n{color:var(--ok);text-shadow:0 0 12px rgba(0,255,136,.5)}
-.stat.fail .n{color:var(--danger);text-shadow:0 0 12px rgba(255,61,110,.5)}
 
-/* MODAL */
-.backdrop{position:fixed;inset:0;z-index:100;background:rgba(2,4,10,.85);backdrop-filter:blur(8px);
-  display:grid;place-items:center;padding:20px}
-.backdrop[hidden]{display:none}
-.modal{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;
-  background:linear-gradient(180deg,#0a1120,#05080f);border:1px solid var(--border2);border-radius:15px;
-  box-shadow:0 30px 80px -20px rgba(0,0,0,.95),0 0 40px -10px rgba(0,255,163,.2);
-  animation:modalIn .25s cubic-bezier(.16,1,.3,1)}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;
-  border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,17,32,.98);
-  backdrop-filter:blur(10px);z-index:2;border-radius:15px 15px 0 0}
-.modal-head h3{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--accent);
-  text-shadow:0 0 10px rgba(0,255,163,.5)}
-.modal-body{padding:20px;display:flex;flex-direction:column;gap:13px}
-.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border);
-  position:sticky;bottom:0;background:rgba(5,8,15,.98);backdrop-filter:blur(10px);border-radius:0 0 15px 15px}
+.entry-ids{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--mono);font-size:10px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;color:var(--muted)}
+.entry-ids b{color:var(--accent);font-weight:700;display:block;font-size:9px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.entry-ids span{color:var(--accent2);word-break:break-all;font-size:9.5px}
 
-/* TOAST */
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .toast{background:linear-gradient(135deg,#0a1120,#05080f);border:1px solid var(--border2);
   border-left:3px solid var(--accent);border-radius:9px;padding:11px 15px;color:var(--text);font-size:12px;
   font-family:var(--mono);box-shadow:0 20px 60px -20px rgba(0,0,0,.9),0 0 20px -4px rgba(0,255,163,.3);
   animation:tin .25s ease;max-width:320px;pointer-events:auto}
-.toast.error{border-left-color:var(--danger);box-shadow:0 20px 60px -20px rgba(0,0,0,.9),0 0 20px -4px rgba(255,61,110,.3)}
+.toast.error{border-left-color:var(--danger)}
 .toast.warn{border-left-color:var(--warn)}
 .toast.ok{border-left-color:var(--ok)}
 @keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
@@ -172,12 +151,11 @@ a{color:var(--accent2);text-decoration:none}
     <div class="logo">&lt;/&gt;</div>
     <div>
       <h1><span>AGENT</span>_SUDO</h1>
-      <small>auto_submit · tracker</small>
+      <small>auto_fill · tracker</small>
     </div>
   </div>
   <div class="top-actions">
     <span class="dev-badge">root@agent-sudo</span>
-    <button class="btn ghost small" id="settingsBtn">⚙ ENTRY_IDS</button>
     <a class="btn ghost small" target="_blank" rel="noopener"
        href="https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform">
       ↗ VIEW_FORM
@@ -187,64 +165,97 @@ a{color:var(--accent2);text-decoration:none}
 
 <main class="layout">
 
-  <!-- LEFT -->
+  <!-- ══════════ LEFT: CONFIG ══════════ -->
   <section class="card">
-    <h2>PASTE_DATA<span class="blink"></span></h2>
+    <h2>CONFIG<span class="blink"></span></h2>
 
     <div class="field">
-      <span>Paste raw text data (one entry per block, or CSV/TSV)</span>
-      <textarea id="pasteArea" placeholder="7306227436
-What I taught today — commands, notes, code, topics…
+      <span>Reg Number of Tutor</span>
+      <input id="fTutor" value="7306227436" placeholder="7306227436" />
+    </div>
 
-7306227436
-Another session text here…
-
-OR:
-
-7306227436, What I taught today
-7306227436|Another session text"></textarea>
+    <div class="field">
+      <span>Chapter Code</span>
+      <input id="fCode" placeholder="SMSC01 / EH-01 / DM-02 / stock market…" autocomplete="off" />
     </div>
 
     <div class="row" style="margin-bottom:12px">
-      <button class="btn primary" id="parseBtn">⚡ PARSE_DATA</button>
-      <button class="btn ghost small" id="clearPasteBtn">CLEAR</button>
-      <span class="spacer"></span>
-      <span class="hint" id="parseInfo"></span>
+      <div class="field" style="flex:1;margin-bottom:0">
+        <span>Slot</span>
+        <select id="fSlot">
+          <option>6 am to 8 am</option>
+          <option>8 am to 10 am</option>
+          <option>10 am to 12 pm</option>
+          <option selected>12 pm to 2 pm</option>
+          <option>8 am to 1 pm (Saturday)</option>
+          <option>10 am to 4 pm</option>
+        </select>
+      </div>
+      <div class="field" style="flex:1;margin-bottom:0">
+        <span>Sub-Batch</span>
+        <select id="fBatch">
+          <option selected>A</option><option>B</option><option>C</option>
+          <option>D</option><option>E</option><option>F</option>
+        </select>
+      </div>
     </div>
 
-    <div class="hint" style="margin-bottom:12px">
-      <b>Supported formats:</b><br>
-      • Tutor number on its own line, then text until blank line<br>
-      • <code>tutor, text</code> or <code>tutor|text</code> or <code>tutor&#9;text</code><br>
-      • Or paste raw form-format data — parser auto-detects the tutor number (10+ digits)
+    <div class="field">
+      <span>Paste Dates / Data (one per line)</span>
+      <textarea id="fDates" placeholder="2026-07-24
+2026-07-27
+2026-07-29
+2026-07-30
+2026-08-05"></textarea>
     </div>
 
-    <div id="entryArea"></div>
+    <div class="hint" style="margin-top:-6px;margin-bottom:12px">
+      <b>Accepted formats:</b><br>
+      • <code>2026-07-24</code> — just dates<br>
+      • <code>24/07/2026</code> or <code>24-07-2026</code><br>
+      • <code>Fri Jul 24 2026 00:00:00 GMT+0530</code><br>
+      • <code>2026-07-24, 12 pm to 2 pm, A</code> — with slot &amp; batch<br>
+      • CSV/comma, tab, newline — all work
+    </div>
+
+    <button class="btn primary full" id="generateBtn">⚡ GENERATE_URLS</button>
+
+    <div id="urlInfo" class="hint" style="margin-top:12px;text-align:center"></div>
   </section>
 
-  <!-- RIGHT -->
-  <aside class="card">
-    <h2>STATUS<span class="blink"></span></h2>
+  <!-- ══════════ RIGHT: OUTPUT ══════════ -->
+  <section class="card">
+    <h2>GENERATED<span class="blink"></span></h2>
 
     <div class="stats">
       <div class="stat"><div class="n" id="statTotal">0</div><div class="l">TOTAL</div></div>
-      <div class="stat ok"><div class="n" id="statOk">0</div><div class="l">SENT</div></div>
-      <div class="stat fail"><div class="n" id="statFail">0</div><div class="l">FAILED</div></div>
+      <div class="stat"><div class="n" id="statOpened">0</div><div class="l">OPENED</div></div>
+      <div class="stat"><div class="n" id="statLeft">0</div><div class="l">LEFT</div></div>
     </div>
 
-    <div class="row" style="margin-bottom:12px">
-      <button class="btn primary full" id="submitAllBtn">⚡ SUBMIT_ALL</button>
-    </div>
-    <div class="row" style="margin-bottom:12px">
-      <button class="btn outline small" id="retryFailBtn">↻ RETRY_FAILED</button>
-      <button class="btn ghost small" id="clearAllBtn">🗑 CLEAR_ALL</button>
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn primary small" id="openAllBtn">↗ OPEN_ALL</button>
+      <button class="btn outline small" id="copyAllBtn">⧉ COPY_ALL</button>
+      <button class="btn ghost small" id="resetBtn">↺ RESET_OPENED</button>
     </div>
 
-    <div class="hint" id="statusLog" style="max-height:300px;overflow-y:auto;background:var(--bg2);
-      border:1px solid var(--border);border-radius:9px;padding:11px;font-size:11px">
-      // waiting for data…
-    </div>
-  </aside>
+    <div id="urlArea"></div>
+
+    <details style="margin-top:16px">
+      <summary style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);user-select:none">
+        ▸ active entry IDs (auto-detected from your form)
+      </summary>
+      <div class="entry-ids" style="margin-top:10px">
+        <div><b>Tutor</b><span>entry.301464598</span></div>
+        <div><b>Year</b><span>entry.1016980109_year</span></div>
+        <div><b>Month</b><span>entry.1016980109_month</span></div>
+        <div><b>Day</b><span>entry.1016980109_day</span></div>
+        <div><b>Slot</b><span>entry.704430059</span></div>
+        <div><b>Code</b><span>entry.256369685</span></div>
+        <div><b>Batch</b><span>entry.2048472714</span></div>
+      </div>
+    </details>
+  </section>
 
 </main>
 
@@ -252,44 +263,17 @@ OR:
   AGENT_SUDO © <span id="year"></span> · Dev <span class="dev">Bilal</span> · Tutor <span class="dev">7306227436</span>
 </footer>
 
-<!-- ═══ MODAL ═══ -->
-<div class="backdrop" id="settingsModal" hidden>
-  <div class="modal">
-    <div class="modal-head">
-      <h3>⚙ ENTRY_IDS_CONFIG</h3>
-      <button class="btn ghost small" id="closeSettings">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="hint" style="margin:0 0 4px">
-        <b>How to get entry IDs:</b><br>
-        1. Open the form in Chrome → <code>F12</code> → <b>Network</b> tab<br>
-        2. Fill the form once with dummy data → click <b>Submit</b><br>
-        3. Click the <code>formResponse</code> request → <b>Payload</b> tab<br>
-        4. Copy each <code>entry.XXXXX</code> name and paste below.
-      </p>
-      <label class="field"><span>Form Response URL</span><input id="cfgUrl" /></label>
-      <label class="field"><span>Registered Number of Tutor → entry</span><input id="cfgTutor" placeholder="entry.301464598" /></label>
-      <label class="field"><span>What you taught today → entry</span><input id="cfgText" placeholder="entry.XXXXXXXXX" /></label>
-      <label class="field"><span>Default Tutor Number</span><input id="cfgDefaultTutor" placeholder="7306227436" /></label>
-    </div>
-    <div class="modal-foot">
-      <button class="btn ghost small" id="cancelSettings">CANCEL</button>
-      <button class="btn primary small" id="saveSettings">SAVE</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   AGENT_SUDO // AUTO_SUBMIT
-   Developer: Bilal
+   AGENT_SUDO // AUTO_FILL
+   Entry IDs hard-coded from your Google Form URL
    ═══════════════════════════════════════════════════════════ */
 
 /* ── MATRIX RAIN ── */
 (function(){
-  const cvs = document.getElementById('matrix'), ctx = cvs.getContext('2d');
+  const cvs=document.getElementById('matrix'),ctx=cvs.getContext('2d');
   let W,H,cols,drops;
   const chars='アカサタナハマヤラワｱｲｳｴｵ0123456789ABCDEFabcdef<>[]{}#$%&*/\\|=+';
   const fs=14;
@@ -299,33 +283,28 @@ OR:
     ctx.fillStyle='#00ffa3';ctx.font=fs+'px JetBrains Mono, monospace';
     for(let i=0;i<cols;i++){
       ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
-      if(drops[i]*fs>H && Math.random()>0.975) drops[i]=0;
+      if(drops[i]*fs>H&&Math.random()>0.975)drops[i]=0;
       drops[i]++;
     }
   }
-  resize(); addEventListener('resize',resize); setInterval(draw,55);
+  resize();addEventListener('resize',resize);setInterval(draw,55);
 })();
 
-/* ── STORE ── */
-const STORE='agent-sudo.auto.v1';
-const DEFAULT_FORM={
-  url:'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/formResponse',
-  eTutor:'',
-  eText:'',
-  defaultTutor:'7306227436'
+/* ── ENTRY IDS (from your form URL) ── */
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
+const ID = {
+  tutor:'entry.301464598',
+  year:'entry.1016980109_year',
+  month:'entry.1016980109_month',
+  day:'entry.1016980109_day',
+  slot:'entry.704430059',
+  code:'entry.256369685',
+  batch:'entry.2048472714'
 };
-
-let state=load();
-function load(){
-  try{const r=localStorage.getItem(STORE);if(r){const p=JSON.parse(r);if(p&&p.form)return p;}}catch(e){}
-  return {form:{...DEFAULT_FORM},entries:[]};
-}
-function save(){localStorage.setItem(STORE,JSON.stringify(state));}
 
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid=p=>p+'-'+Math.random().toString(36).slice(2,9);
 
 function toast(msg,type=''){
   const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;
@@ -334,231 +313,219 @@ function toast(msg,type=''){
   setTimeout(()=>el.remove(),2900);
 }
 
-/* ── PARSE PASTED DATA ── */
-function parsePastedData(text){
-  text=text.trim();
-  if(!text)return [];
-
-  const entries=[];
-  const lines=text.split(/\r?\n/);
-  const tutorRe=/^\+?\d[\d\s\-]{8,}$/;
-
-  // Strategy 1: tutor line + text block (tutor on its own line)
-  // Strategy 2: tutor <sep> text (same line)
-  let i=0;
-  while(i<lines.length){
-    const line=lines[i].trim();
-
-    // skip blanks
-    if(!line){i++;continue;}
-
-    // check if this line is only a tutor number
-    if(tutorRe.test(line.replace(/\s/g,''))){
-      const tutor=line.replace(/\s/g,'');
-      i++;
-      const buf=[];
-      while(i<lines.length && lines[i].trim()!=='' && !tutorRe.test(lines[i].trim().replace(/\s/g,''))){
-        buf.push(lines[i]);i++;
-      }
-      const t=buf.join('\n').trim();
-      if(t) entries.push({id:uid('e'),tutor,text:t,status:'pending'});
-      continue;
-    }
-
-    // otherwise: try tutor<sep>text on same line
-    const m=line.match(/^(\+?\d[\d\s\-]{8,})\s*[,|\t;]\s*(.+)$/);
-    if(m){
-      entries.push({id:uid('e'),tutor:m[1].replace(/\s/g,''),text:m[2].trim(),status:'pending'});
-      i++;continue;
-    }
-
-    // fallback: treat as text with default tutor
-    entries.push({id:uid('e'),tutor:state.form.defaultTutor,text:line,status:'pending'});
-    i++;
+/* ── DATE PARSER ── */
+function parseDate(str){
+  if(!str)return null;
+  str=String(str).trim();
+  // ISO: 2026-07-24
+  let m=str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m)return {y:+m[1],m:+m[2],d:+m[3]};
+  // Long: Fri Jul 24 2026 00:00:00 GMT+0530
+  m=str.match(/([A-Za-z]{3,})\s+(\d{1,2})\s+(\d{4})/);
+  if(m){
+    const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+    const mm=months[m[1].slice(0,3).toLowerCase()];
+    if(mm)return {y:+m[3],m:mm,d:+m[2]};
   }
-
-  return entries;
+  // dd/mm/yyyy or dd-mm-yyyy
+  m=str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m)return {y:+m[3],m:+m[2],d:+m[1]};
+  return null;
+}
+function isoDate(p){
+  return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;
 }
 
-/* ── RENDER ENTRIES ── */
-function renderEntries(){
-  const area=$('#entryArea');
-  if(!state.entries.length){
-    area.innerHTML=`
-      <div class="empty">
-        <div class="ei">📭</div>
-        <h3>// no_entries</h3>
-        <p>Paste your data above and click PARSE_DATA</p>
-      </div>`;
+/* ── BUILD PREFILLED URL ── */
+function buildUrl({tutor,date,slot,code,batch}){
+  const p=parseDate(date);
+  if(!p)return '';
+  const params=new URLSearchParams();
+  params.set(ID.tutor,tutor);
+  params.set(ID.year,p.y);
+  params.set(ID.month,p.m);
+  params.set(ID.day,p.d);
+  params.set(ID.slot,slot);
+  params.set(ID.code,code);
+  params.set(ID.batch,batch);
+  return `${FORM_URL}?${params.toString()}`;
+}
+
+/* ── PARSE PASTED DATA ── */
+function parseInput(text){
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const out=[];
+  const seen=new Set();
+
+  lines.forEach(line=>{
+    // Split by tab first, fallback to comma
+    let parts=line.includes('\t')?line.split('\t'):line.split(',');
+    parts=parts.map(p=>p.trim());
+
+    // Try to find a date in the parts
+    let dateStr=null, slot=null, batch=null;
+
+    for(const p of parts){
+      const d=parseDate(p);
+      if(d && !dateStr){
+        dateStr=isoDate(d);
+        continue;
+      }
+      // Slot detection
+      if(/^\d+\s*(am|pm)\s*to\s*\d+\s*(am|pm)/i.test(p)){slot=p;continue;}
+      if(/saturday/i.test(p)){slot=p;continue;}
+      // Batch detection
+      if(/^[A-F]$/i.test(p) && !batch){batch=p.toUpperCase();continue;}
+    }
+
+    if(!dateStr)return; // skip lines without a valid date
+
+    const key=dateStr+'|'+(slot||'')+'|'+(batch||'');
+    if(seen.has(key))return;
+    seen.add(key);
+
+    out.push({
+      date:dateStr,
+      slot:slot||null,
+      batch:batch||null,
+      original:line
+    });
+  });
+
+  return out;
+}
+
+/* ── STATE ── */
+let generated=[];
+
+/* ── RENDER ── */
+function render(){
+  const area=$('#urlArea');
+  if(!generated.length){
+    area.innerHTML=`<div class="empty">
+      <div class="ei">📭</div>
+      <h3>// no_urls_yet</h3>
+      <p>Fill config on the left and click GENERATE_URLS</p>
+    </div>`;
     updateStats();
     return;
   }
 
-  area.innerHTML=`<div class="entry-list">${state.entries.map(e=>{
-    const cls=e.status==='ok'?'ok':e.status==='fail'?'fail':e.status==='submitting'?'submitting':'';
-    const label=e.status==='ok'?'✓ SENT':e.status==='fail'?'✗ FAILED':e.status==='submitting'?'⋯ SENDING':'○ PENDING';
-    return `
-      <div class="entry ${cls}" data-id="${e.id}">
-        <div class="entry-head">
-          <span class="entry-tutor">${esc(e.tutor)}</span>
-          <span class="entry-status ${cls}">${label}</span>
-        </div>
-        <div class="entry-text">${esc(e.text)}</div>
-        <div class="entry-actions">
-          <button class="btn primary small" data-submit="${e.id}">⚡ SUBMIT</button>
-          <button class="btn ghost small" data-copy="${esc(e.text)}">⧉ COPY</button>
-          <button class="btn danger small" data-del="${e.id}">🗑</button>
-        </div>
-      </div>`;
-  }).join('')}</div>`;
+  area.innerHTML=`<div class="url-list">${generated.map((u,i)=>`
+    <div class="url-item ${u.opened?'opened':''}" data-idx="${i}">
+      <div class="url-head">
+        <span class="url-date">${esc(u.date)}</span>
+        <span class="url-meta">${esc(u.slot)}</span>
+        <span class="url-meta">batch ${esc(u.batch)}</span>
+        <span class="url-meta" style="color:var(--accent)">${esc(u.code)}</span>
+        <span class="url-num">#${i+1} ${u.opened?'✓':''}</span>
+      </div>
+      <div class="url-actions">
+        <a class="btn primary small" href="${esc(u.url)}" target="_blank" rel="noopener" data-open="${i}">↗ OPEN_FORM</a>
+        <button class="btn ghost small" data-copy="${esc(u.url)}">⧉ COPY_URL</button>
+        <button class="btn ghost small" data-copydate="${esc(u.date)}">⧉ DATE</button>
+      </div>
+    </div>
+  `).join('')}</div>`;
 
-  $$('.entry [data-submit]').forEach(b=>b.addEventListener('click',()=>submitOne(b.dataset.submit)));
-  $$('.entry [data-copy]').forEach(b=>b.addEventListener('click',async()=>{
-    try{await navigator.clipboard.writeText(b.dataset.copy);toast('Copied ✓','ok');}
+  // Wire open — mark as opened
+  $$('#urlArea [data-open]').forEach(a=>a.addEventListener('click',()=>{
+    const i=+a.dataset.open;
+    if(generated[i])generated[i].opened=true;
+    setTimeout(render,200);
+  }));
+
+  // Copy URL
+  $$('#urlArea [data-copy]').forEach(b=>b.addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(b.dataset.copy);toast('URL copied ✓','ok');}
     catch{toast('Copy failed','error');}
   }));
-  $$('.entry [data-del]').forEach(b=>b.addEventListener('click',()=>{
-    state.entries=state.entries.filter(x=>x.id!==b.dataset.del);save();renderEntries();
+
+  // Copy date only
+  $$('#urlArea [data-copydate]').forEach(b=>b.addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(b.dataset.copydate);toast('Date copied','ok');}
+    catch{toast('Copy failed','error');}
   }));
 
   updateStats();
 }
 
-/* ── STATS ── */
 function updateStats(){
-  const t=state.entries.length;
-  const ok=state.entries.filter(e=>e.status==='ok').length;
-  const fail=state.entries.filter(e=>e.status==='fail').length;
+  const t=generated.length;
+  const o=generated.filter(u=>u.opened).length;
   $('#statTotal').textContent=t;
-  $('#statOk').textContent=ok;
-  $('#statFail').textContent=fail;
+  $('#statOpened').textContent=o;
+  $('#statLeft').textContent=t-o;
 }
 
-/* ── SUBMIT ONE ── */
-async function submitOne(id){
-  const e=state.entries.find(x=>x.id===id);
-  if(!e)return;
+/* ── GENERATE ── */
+$('#generateBtn').addEventListener('click',()=>{
+  const tutor=$('#fTutor').value.trim();
+  const code=$('#fCode').value.trim();
+  const defSlot=$('#fSlot').value;
+  const defBatch=$('#fBatch').value;
+  const raw=$('#fDates').value;
 
-  if(!state.form.eTutor||!state.form.eText){
-    toast('Configure ENTRY_IDS first','error');
-    return;
-  }
+  if(!tutor)return toast('Tutor number required','error');
+  if(!code)return toast('Chapter code required','error');
+  if(!raw.trim())return toast('Paste at least one date','warn');
 
-  e.status='submitting';
-  renderEntries();
-  log(`→ sending tutor=${e.tutor} …`);
+  const rows=parseInput(raw);
+  if(!rows.length)return toast('No valid dates found','error');
 
-  try{
-    const body=new URLSearchParams();
-    body.append(state.form.eTutor,e.tutor);
-    body.append(state.form.eText,e.text);
+  generated=rows.map(r=>{
+    const slot=r.slot||defSlot;
+    const batch=r.batch||defBatch;
+    return {
+      date:r.date,
+      slot,
+      batch,
+      code,
+      tutor,
+      url:buildUrl({tutor,date:r.date,slot,code,batch}),
+      opened:false
+    };
+  });
 
-    await fetch(state.form.url,{
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:body.toString()
-    });
-
-    // no-cors → opaque response, assume success
-    e.status='ok';
-    log(`✓ sent tutor=${e.tutor}`);
-    toast('Sent ✓','ok');
-  }catch(err){
-    e.status='fail';
-    log(`✗ failed tutor=${e.tutor} — ${err.message}`);
-    toast('Failed: '+err.message,'error');
-  }
-
-  save();
-  renderEntries();
-}
-
-/* ── SUBMIT ALL ── */
-$('#submitAllBtn').addEventListener('click',async()=>{
-  const pending=state.entries.filter(e=>e.status==='pending'||e.status==='fail');
-  if(!pending.length)return toast('Nothing to submit','warn');
-  if(!state.form.eTutor||!state.form.eText)return toast('Configure ENTRY_IDS first','error');
-
-  log(`⚡ batch submit — ${pending.length} entries`);
-  for(const e of pending){
-    await submitOne(e.id);
-    await new Promise(r=>setTimeout(r,700)); // rate-limit friendly
-  }
-  log('⚡ batch complete');
+  render();
+  $('#urlInfo').innerHTML=`✓ Generated <b style="color:var(--accent)">${generated.length}</b> URL(s)`;
+  toast(`Generated ${generated.length} URLs ✓`,'ok');
 });
 
-/* ── RETRY FAILED ── */
-$('#retryFailBtn').addEventListener('click',()=>{
-  const fails=state.entries.filter(e=>e.status==='fail');
-  if(!fails.length)return toast('No failed entries','warn');
-  fails.forEach(e=>e.status='pending');
-  save();renderEntries();toast(`${fails.length} reset to pending`,'ok');
+/* ── OPEN ALL ── */
+$('#openAllBtn').addEventListener('click',()=>{
+  const pending=generated.filter(u=>!u.opened);
+  if(!pending.length)return toast('All URLs already opened','warn');
+  if(!confirm(`Open ${pending.length} form(s) in new tabs?\n\nNote: enable popups for this site.`))return;
+
+  pending.forEach((u,i)=>{
+    setTimeout(()=>{
+      window.open(u.url,'_blank');
+      u.opened=true;
+      if(i===pending.length-1)setTimeout(render,300);
+    },i*350);
+  });
+  toast(`Opening ${pending.length} tabs…`,'ok');
 });
 
-/* ── CLEAR ALL ── */
-$('#clearAllBtn').addEventListener('click',()=>{
-  if(!confirm('Delete ALL entries?'))return;
-  state.entries=[];save();renderEntries();toast('Cleared');
+/* ── COPY ALL ── */
+$('#copyAllBtn').addEventListener('click',async()=>{
+  if(!generated.length)return toast('Generate URLs first','warn');
+  const text=generated.map(u=>`${u.date}\t${u.slot}\t${u.batch}\t${u.code}\t${u.tutor}\t${u.url}`).join('\n');
+  try{await navigator.clipboard.writeText(text);toast('All URLs copied ✓','ok');}
+  catch{toast('Copy failed','error');}
 });
 
-/* ── PARSE BUTTON ── */
-$('#parseBtn').addEventListener('click',()=>{
-  const raw=$('#pasteArea').value;
-  if(!raw.trim())return toast('Paste some data first','warn');
-  const parsed=parsePastedData(raw);
-  if(!parsed.length)return toast('No valid entries found','error');
-  state.entries=parsed;
-  save();renderEntries();
-  $('#parseInfo').textContent=`✓ parsed ${parsed.length} entries`;
-  toast(`Parsed ${parsed.length} entries ✓`,'ok');
-  log(`⚡ parsed ${parsed.length} entries`);
-});
-
-$('#clearPasteBtn').addEventListener('click',()=>{$('#pasteArea').value='';$('#parseInfo').textContent='';});
-
-/* ── STATUS LOG ── */
-function log(msg){
-  const el=$('#statusLog');
-  const time=new Date().toLocaleTimeString('en-IN',{hour12:false});
-  el.innerHTML=`<div style="color:var(--dim)">[${time}]</div>`+el.innerHTML;
-  const line=document.createElement('div');
-  line.textContent=msg;
-  line.style.color=msg.startsWith('✓')?'var(--ok)':msg.startsWith('✗')?'var(--danger)':msg.startsWith('⚡')?'var(--accent2)':'var(--muted)';
-  line.style.marginBottom='3px';
-  el.insertBefore(line,el.children[1]||null);
-  while(el.children.length>40)el.removeChild(el.lastChild);
-}
-
-/* ── SETTINGS ── */
-function openSettings(){
-  $('#cfgUrl').value=state.form.url;
-  $('#cfgTutor').value=state.form.eTutor;
-  $('#cfgText').value=state.form.eText;
-  $('#cfgDefaultTutor').value=state.form.defaultTutor;
-  $('#settingsModal').hidden=false;document.body.style.overflow='hidden';
-}
-function closeSettings(){$('#settingsModal').hidden=true;document.body.style.overflow='';}
-$('#settingsBtn').addEventListener('click',openSettings);
-$('#closeSettings').addEventListener('click',closeSettings);
-$('#cancelSettings').addEventListener('click',closeSettings);
-$('#settingsModal').addEventListener('click',e=>{if(e.target.id==='settingsModal')closeSettings();});
-
-$('#saveSettings').addEventListener('click',()=>{
-  state.form={
-    url:$('#cfgUrl').value.trim()||DEFAULT_FORM.url,
-    eTutor:$('#cfgTutor').value.trim(),
-    eText:$('#cfgText').value.trim(),
-    defaultTutor:$('#cfgDefaultTutor').value.trim()||'7306227436'
-  };
-  save();closeSettings();renderEntries();
-  toast('Settings saved ✓','ok');
+/* ── RESET ── */
+$('#resetBtn').addEventListener('click',()=>{
+  generated.forEach(u=>u.opened=false);
+  render();
+  toast('Reset ✓','ok');
 });
 
 /* ── INIT ── */
 $('#year').textContent=new Date().getFullYear();
-renderEntries();
-log('// system ready — paste data and click PARSE_DATA');
+render();
 </script>
 </body>
 </html>
