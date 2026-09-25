@@ -3,201 +3,339 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Teaching Tracker — Agent sudo</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>Agent sudo · Teaching Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#04060b;--bg2:#080c14;--panel:#0b1220;--panel2:#0e1728;
-  --border:#16233a;--border2:#1e304f;--text:#e6f1ff;--muted:#8ba0bf;--dim:#4b5f7e;
-  --accent:#00e6a8;--accent2:#00b3ff;--danger:#ff4d6d;--warn:#ffb020;
+  --bg:#02040a;--bg2:#05080f;--panel:#0a1120;--panel2:#0d1626;
+  --border:#152340;--border2:#1e3358;
+  --text:#d6e8ff;--muted:#7d93b3;--dim:#3d5273;
+  --accent:#00ffa3;--accent2:#00c2ff;--purple:#b14aff;--danger:#ff3d6e;--warn:#ffb020;
   --mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Inter',system-ui,sans-serif;
+  --glow:0 0 20px rgba(0,255,163,.4);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background-image:linear-gradient(rgba(22,35,58,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(22,35,58,.3) 1px,transparent 1px);
-  background-size:42px 42px;mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 100%);
-  -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 100%)}
-body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(700px 400px at 10% -10%,rgba(0,230,168,.14),transparent 60%),radial-gradient(900px 500px at 90% 0%,rgba(0,179,255,.10),transparent 60%)}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;position:relative;
+}
+#matrix{position:fixed;inset:0;z-index:0;opacity:.15;pointer-events:none}
+.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,255,163,.02) 0px,rgba(0,255,163,.02) 1px,transparent 1px,transparent 3px);
+  mix-blend-mode:overlay}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 0%,rgba(0,0,0,.6) 100%)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(700px 400px at 10% -10%,rgba(0,255,163,.15),transparent 60%),
+             radial-gradient(900px 500px at 90% 0%,rgba(0,194,255,.10),transparent 60%),
+             radial-gradient(600px 400px at 50% 110%,rgba(177,74,255,.08),transparent 60%)}
+
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:#1c2c48;border-radius:6px;border:2px solid var(--bg2)}
-::selection{background:rgba(0,230,168,.3);color:#fff}
+::-webkit-scrollbar-thumb:hover{background:#2a4170}
+::selection{background:rgba(0,255,163,.35);color:#fff}
 a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
 
-.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:14px 22px;background:rgba(8,12,20,.85);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:16px;color:#04120e;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 24px -4px rgba(0,230,168,.6)}
-.brand h1{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
-.brand h1 span{color:var(--accent)}
-.brand small{font-size:10.5px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.devtag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent);
-  padding:8px 12px;border-radius:10px;border:1px solid rgba(0,230,168,.3);background:rgba(0,230,168,.06)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(0,230,168,.7);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,230,168,.7)}70%{box-shadow:0 0 0 9px rgba(0,230,168,0)}100%{box-shadow:0 0 0 0 rgba(0,230,168,0)}}
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px 22px;background:rgba(2,4,10,.85);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);position:relative;
+}
+.topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 15px;border-radius:10px;
-  font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .16s;white-space:nowrap;user-select:none}
-.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04120e;box-shadow:0 4px 18px -6px rgba(0,230,168,.6)}
-.btn.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn.outline{background:transparent;color:var(--accent);border-color:rgba(0,230,168,.4)}
-.btn.outline:hover{background:rgba(0,230,168,.08);border-color:var(--accent)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);
+  font-weight:700;font-size:16px;color:#02130d;position:relative;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 0 24px -4px rgba(0,255,163,.7),inset 0 0 20px rgba(255,255,255,.15);
+  animation:logoPulse 3s ease-in-out infinite}
+@keyframes logoPulse{
+  0%,100%{box-shadow:0 0 24px -4px rgba(0,255,163,.7),inset 0 0 20px rgba(255,255,255,.15)}
+  50%{box-shadow:0 0 36px -2px rgba(0,255,163,.9),inset 0 0 24px rgba(255,255,255,.25)}
+}
+.brand h1{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1;font-family:var(--mono)}
+.brand h1 span{color:var(--accent);text-shadow:0 0 12px rgba(0,255,163,.7)}
+.brand small{font-size:10.5px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:var(--mono)}
+.brand small b{color:var(--accent);font-weight:700}
+
+.glitch{position:relative;display:inline-block}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}
+.glitch::before{color:var(--accent2);animation:glitch1 3s infinite linear alternate-reverse;clip-path:inset(0 0 50% 0)}
+.glitch::after{color:var(--accent);animation:glitch2 2.7s infinite linear alternate-reverse;clip-path:inset(50% 0 0 0)}
+@keyframes glitch1{0%,90%,100%{transform:translateX(0)}92%{transform:translateX(-2px)}94%{transform:translateX(1px)}96%{transform:translateX(-1px)}}
+@keyframes glitch2{0%,88%,100%{transform:translateX(0)}90%{transform:translateX(2px)}93%{transform:translateX(-1px)}95%{transform:translateX(1px)}}
+
+.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dev-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--accent);padding:8px 14px;border-radius:10px;position:relative;
+  border:1px solid rgba(0,255,163,.35);background:rgba(0,255,163,.06);
+  text-shadow:0 0 8px rgba(0,255,163,.6)}
+.dev-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;
+  font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;
+  transition:all .18s;white-space:nowrap;user-select:none;position:relative;overflow:hidden}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;
+  box-shadow:0 4px 20px -6px rgba(0,255,163,.8)}
+.btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px);
+  box-shadow:0 8px 28px -6px rgba(0,255,163,1)}
+.btn.primary::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .5s}
+.btn.primary:hover::after{left:100%}
+.btn.outline{background:transparent;color:var(--accent);border-color:rgba(0,255,163,.4)}
+.btn.outline:hover{background:rgba(0,255,163,.08);border-color:var(--accent);box-shadow:0 0 16px rgba(0,255,163,.3)}
 .btn.ghost{background:var(--panel);color:var(--muted);border-color:var(--border)}
 .btn.ghost:hover{color:var(--text);border-color:var(--border2);background:var(--panel2)}
-.btn.danger{color:var(--danger);border-color:rgba(255,77,109,.35)}
-.btn.danger:hover{background:rgba(255,77,109,.08);border-color:var(--danger)}
-.btn.small{padding:6px 11px;font-size:12px}
+.btn.danger{color:var(--danger);border-color:rgba(255,61,110,.35)}
+.btn.danger:hover{background:rgba(255,61,110,.08);border-color:var(--danger)}
+.btn.small{padding:7px 12px;font-size:12px}
 .btn.full{width:100%}
 
-.layout{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:20px 22px;max-width:1500px;margin:0 auto}
-@media(max-width:960px){.layout{grid-template-columns:1fr}}
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 440px;gap:20px;padding:22px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
 
-.card{background:linear-gradient(180deg,rgba(11,18,32,.95),rgba(8,12,20,.95));border:1px solid var(--border);border-radius:14px;padding:22px}
-.card h2{font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.card h2::before{content:'';width:3px;height:16px;border-radius:2px;background:var(--accent)}
+.card{
+  background:linear-gradient(180deg,rgba(10,17,32,.92),rgba(5,8,15,.92));
+  border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden;
+  backdrop-filter:blur(10px);box-shadow:0 20px 60px -30px rgba(0,0,0,.9);
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.6}
+.card h2{font-size:14px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;color:var(--text)}
+.card h2::before{content:'//';color:var(--accent);font-weight:700;text-shadow:0 0 8px var(--accent)}
+.card h2 .blink{display:inline-block;width:8px;height:14px;background:var(--accent);
+  margin-left:2px;animation:blink 1s steps(2) infinite;vertical-align:middle;box-shadow:0 0 10px var(--accent)}
+@keyframes blink{50%{opacity:0}}
 
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.field>span{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
-.field input,.field textarea,.field select{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);
-  font-family:var(--sans);font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
-.field textarea{resize:vertical;min-height:140px;font-family:var(--mono);font-size:13px;white-space:pre;line-height:1.6}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,230,168,.12)}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:560px){.grid-2{grid-template-columns:1fr}}
+/* ── FIELDS ── */
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.field>span{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+  font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.field>span::before{content:'>';color:var(--accent);font-weight:700}
+.field input,.field textarea,.field select{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);
+  font-family:var(--mono);font-size:13.5px;outline:none;transition:all .18s;width:100%;
+}
+.field textarea{resize:vertical;min-height:160px;white-space:pre;line-height:1.65}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,255,163,.14),0 0 20px -4px rgba(0,255,163,.4)}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
 
-.topic-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.pill{padding:8px 16px;border-radius:10px;background:var(--panel);border:1px solid var(--border);color:var(--muted);
-  font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
-.pill:hover{border-color:var(--border2);color:var(--text)}
-.pill.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04120e;border-color:transparent;box-shadow:0 4px 18px -6px rgba(0,230,168,.5)}
+/* ── PILLS / CHIPS ── */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:8px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--border);color:var(--muted);
+  font-size:12.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--mono);
+  display:inline-flex;align-items:center;gap:6px;position:relative}
+.chip:hover{border-color:var(--border2);color:var(--text);transform:translateY(-1px)}
+.chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;border-color:transparent;
+  box-shadow:0 4px 18px -6px rgba(0,255,163,.7)}
+.chip.add{background:transparent;border:1px dashed var(--border2);color:var(--dim)}
+.chip.add:hover{color:var(--accent);border-color:var(--accent);border-style:solid}
+.chip .x{font-size:14px;color:var(--dim);margin-left:4px}
+.chip .x:hover{color:var(--danger)}
 
-.entry-list{display:flex;flex-direction:column;gap:10px;max-height:70vh;overflow-y:auto;padding-right:4px}
-.entry{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;transition:all .15s}
-.entry:hover{border-color:var(--border2)}
-.entry-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.entry-code{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;
-  background:rgba(0,230,168,.12);color:var(--accent);border:1px solid rgba(0,230,168,.25)}
-.entry-topic{font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(0,179,255,.1);color:var(--accent2);
-  border:1px solid rgba(0,179,255,.2);font-family:var(--mono)}
-.entry-tutor{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
-.entry-text{font-family:var(--mono);font-size:12px;color:#c8d6ee;background:#05090f;border-radius:8px;padding:10px;
-  white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto;margin-bottom:10px;border:1px solid var(--border)}
-.entry-actions{display:flex;gap:6px;flex-wrap:wrap}
+.tutor-display{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  background:linear-gradient(135deg,rgba(0,255,163,.1),rgba(0,194,255,.05));
+  border:1px solid rgba(0,255,163,.3);border-radius:12px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.tutor-display::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,255,163,.15),transparent);animation:shine 4s infinite}
+@keyframes shine{0%{left:-100%}50%,100%{left:100%}}
+.tutor-display .label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono)}
+.tutor-display .num{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--accent);
+  letter-spacing:1px;text-shadow:0 0 16px rgba(0,255,163,.6)}
+.tutor-display .edit{margin-left:auto}
 
-.empty{text-align:center;padding:50px 20px;border:1px dashed var(--border2);border-radius:14px;background:rgba(11,18,32,.4)}
-.empty .ei{font-size:42px;margin-bottom:10px;opacity:.9}
-.empty h3{font-size:16px;margin-bottom:6px}
-.empty p{color:var(--muted);font-size:13px}
+/* ── ENTRY LIST ── */
+.entry-list{display:flex;flex-direction:column;gap:12px;max-height:72vh;overflow-y:auto;padding-right:6px}
+.entry{
+  background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
+  border:1px solid var(--border);border-radius:12px;padding:15px;transition:all .2s;position:relative;overflow:hidden;
+  animation:slideIn .35s ease both;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.entry:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(0,255,163,.25)}
+.entry::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--accent),transparent);opacity:.7}
+.entry-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.entry-code{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;
+  background:rgba(0,255,163,.12);color:var(--accent);border:1px solid rgba(0,255,163,.3);
+  text-shadow:0 0 8px rgba(0,255,163,.5)}
+.entry-topic{font-size:11px;padding:3px 9px;border-radius:6px;background:rgba(0,194,255,.1);color:var(--accent2);
+  border:1px solid rgba(0,194,255,.25);font-family:var(--mono)}
+.entry-time{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-left:auto}
+.entry-text{font-family:var(--mono);font-size:12px;color:#c8d6ee;background:#02050b;border-radius:8px;padding:12px;
+  white-space:pre-wrap;word-break:break-word;max-height:140px;overflow-y:auto;margin-bottom:11px;
+  border:1px solid var(--border);line-height:1.65}
+.entry-actions{display:flex;gap:7px;flex-wrap:wrap}
 
-.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:linear-gradient(135deg,#0d1526,#080c14);border:1px solid var(--border2);border-left:3px solid var(--accent);
-  border-radius:10px;padding:11px 15px;color:var(--text);font-size:12.5px;box-shadow:0 20px 60px -20px rgba(0,0,0,.85);
-  animation:tin .22s ease;max-width:320px;pointer-events:auto}
-.toast.error{border-left-color:var(--danger)}
-.toast.warn{border-left-color:var(--warn)}
-@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:60px 20px;border:1px dashed var(--border2);border-radius:14px;background:rgba(10,17,32,.4)}
+.empty .ei{font-size:48px;margin-bottom:12px;opacity:.85;filter:drop-shadow(0 0 20px rgba(0,255,163,.4))}
+.empty h3{font-size:16px;margin-bottom:6px;font-family:var(--mono);color:var(--muted)}
+.empty p{color:var(--dim);font-size:12.5px;font-family:var(--mono)}
 
-.footer{padding:20px 22px;border-top:1px solid var(--border);color:var(--dim);font-size:12px;text-align:center}
-.footer .dev{color:var(--accent);font-family:var(--mono)}
+/* ── PREVIEW BOX ── */
+.preview{
+  margin-top:14px;padding:14px;border:1px solid rgba(0,255,163,.35);border-radius:12px;
+  background:linear-gradient(180deg,rgba(0,255,163,.06),rgba(0,255,163,.01));
+  position:relative;overflow:hidden;animation:slideIn .3s ease;
+}
+.preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;
+  animation:scan 2s linear infinite}
+@keyframes scan{to{background-position:200% 0}}
+.preview .lbl{font-size:10.5px;color:var(--accent);text-transform:uppercase;letter-spacing:1.2px;
+  font-family:var(--mono);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.preview .lbl::before{content:'●';animation:pulse 1.5s infinite}
+.preview .url{font-family:var(--mono);font-size:10.5px;word-break:break-all;color:var(--accent2);
+  margin-bottom:11px;padding:8px;background:#02050b;border-radius:7px;border:1px solid var(--border);max-height:80px;overflow-y:auto}
 
-/* MODAL */
-.backdrop{position:fixed;inset:0;z-index:100;background:rgba(2,4,9,.78);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+/* ── MODAL ── */
+.backdrop{position:fixed;inset:0;z-index:100;background:rgba(2,4,10,.85);backdrop-filter:blur(8px);
+  display:grid;place-items:center;padding:20px}
 .backdrop[hidden]{display:none}
-.modal{width:100%;max-width:540px;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,#0d1526,#080c14);
-  border:1px solid var(--border2);border-radius:16px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);
-  position:sticky;top:0;background:rgba(13,21,38,.97);backdrop-filter:blur(8px);z-index:2}
-.modal-head h3{font-size:15.5px;font-weight:700}
-.modal-body{padding:18px 20px;display:flex;flex-direction:column;gap:13px}
-.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border);position:sticky;bottom:0;background:rgba(8,12,20,.97);backdrop-filter:blur(8px)}
+.modal{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;
+  background:linear-gradient(180deg,#0a1120,#05080f);border:1px solid var(--border2);border-radius:16px;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.95),0 0 40px -10px rgba(0,255,163,.2);
+  animation:modalIn .25s cubic-bezier(.16,1,.3,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,17,32,.98);
+  backdrop-filter:blur(10px);z-index:2;border-radius:16px 16px 0 0}
+.modal-head h3{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--accent);
+  text-shadow:0 0 10px rgba(0,255,163,.5);display:flex;align-items:center;gap:8px}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border);
+  position:sticky;bottom:0;background:rgba(5,8,15,.98);backdrop-filter:blur(10px);border-radius:0 0 16px 16px}
+
+/* ── TOASTS ── */
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:linear-gradient(135deg,#0a1120,#05080f);border:1px solid var(--border2);
+  border-left:3px solid var(--accent);border-radius:10px;padding:12px 16px;color:var(--text);font-size:12.5px;
+  font-family:var(--mono);box-shadow:0 20px 60px -20px rgba(0,0,0,.9),0 0 20px -4px rgba(0,255,163,.3);
+  animation:tin .25s ease;max-width:320px;pointer-events:auto}
+.toast.error{border-left-color:var(--danger);box-shadow:0 20px 60px -20px rgba(0,0,0,.9),0 0 20px -4px rgba(255,61,110,.3)}
+.toast.warn{border-left-color:var(--warn)}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+.footer{padding:22px;border-top:1px solid var(--border);color:var(--dim);font-size:11.5px;text-align:center;
+  font-family:var(--mono);position:relative;z-index:2;letter-spacing:.5px}
+.footer .dev{color:var(--accent);font-weight:700;text-shadow:0 0 8px rgba(0,255,163,.5)}
+
+.hint{font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:-8px;margin-bottom:14px;line-height:1.6}
+.hint code{background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--accent);border:1px solid var(--border)}
 </style>
 </head>
 <body>
+
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+<div class="vignette"></div>
 
 <header class="topbar">
   <div class="brand">
     <div class="logo">&lt;/&gt;</div>
     <div>
-      <h1>Teaching<span>Tracker</span></h1>
-      <small>Agent sudo · Secure Knowledge Base</small>
+      <h1><span class="glitch" data-text="AGENT_SUDO">AGENT_SUDO</span></h1>
+      <small>teaching tracker · <b id="tutorMini">7306227436</b></small>
     </div>
   </div>
   <div class="top-actions">
-    <span class="devtag"><span class="dot"></span>Agent sudo</span>
-    <button class="btn ghost small" id="settingsBtn">⚙ Entry IDs</button>
+    <span class="dev-badge">root@agent-sudo</span>
+    <button class="btn ghost small" id="settingsBtn">⚙ ENTRY_IDS</button>
     <a class="btn primary small" target="_blank" rel="noopener" id="openFormBtn"
        href="https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform">
-      ⚡ Open Google Form
+      ⚡ OPEN_FORM
     </a>
   </div>
 </header>
 
 <main class="layout">
 
-  <!-- LEFT : Input form -->
+  <!-- ═══════ LEFT : INPUT ═══════ -->
   <section class="card">
-    <h2>📝 New Entry</h2>
+    <h2>NEW_ENTRY<span class="blink"></span></h2>
 
+    <!-- TUTOR DISPLAY -->
+    <div class="tutor-display">
+      <div>
+        <div class="label">Tutor Register Number</div>
+        <div class="num" id="tutorDisplay">7306227436</div>
+      </div>
+      <button class="btn ghost small edit" id="changeTutorBtn">✎ CHANGE</button>
+    </div>
+
+    <!-- TOPIC -->
     <div class="field">
       <span>Topic</span>
-      <div class="topic-pills" id="topicPills">
-        <button class="pill active" data-topic="Ethical Hacking">🛡️ Ethical Hacking</button>
-        <button class="pill" data-topic="Stock Market">📈 Stock Market</button>
-        <button class="pill" data-topic="Other">📁 Other</button>
+      <div class="chip-row" id="topicChips">
+        <button class="chip active" data-topic="Ethical Hacking">🛡️ Ethical Hacking</button>
+        <button class="chip" data-topic="Stock Market">📈 Stock Market</button>
+        <button class="chip" data-topic="Other">📁 Other</button>
       </div>
     </div>
 
-    <div class="grid-2">
-      <label class="field">
-        <span>Sub-Chapter Code *</span>
-        <input id="fCode" placeholder="e.g. SMSC01 / EH-01" autocomplete="off" />
-      </label>
-      <label class="field">
-        <span>Tutor Number *</span>
-        <input id="fTutor" value="7306227436" autocomplete="off" />
-      </label>
+    <!-- SUB CHAPTER CODE -->
+    <div class="field">
+      <span>Sub-Chapter Code</span>
+      <div class="chip-row" id="codeChips"></div>
+      <input id="fCode" placeholder="Type or select a code — e.g. SMSC01, EH-01" autocomplete="off" />
     </div>
 
-    <label class="field">
-      <span>Type out what you taught today *</span>
-      <textarea id="fText" placeholder="Paste commands, notes, code — exactly as you want it submitted…"></textarea>
-    </label>
-
-    <div class="grid-2">
-      <button class="btn primary" id="addBtn">➕ Add Entry</button>
-      <button class="btn outline" id="previewBtn">🔗 Preview & Submit</button>
+    <!-- TEXT -->
+    <div class="field">
+      <span>Type out what you taught today in this sub batch</span>
+      <textarea id="fText" placeholder="Paste exactly what you want to appear in the form — commands, notes, code, topics…"></textarea>
     </div>
 
-    <div id="previewBox" style="margin-top:14px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+      <button class="btn primary" id="previewBtn">⚡ GENERATE_LINK</button>
+      <button class="btn outline" id="addBtn">➕ SAVE_ENTRY</button>
+    </div>
+
+    <div id="previewBox"></div>
   </section>
 
-  <!-- RIGHT : Entries -->
+  <!-- ═══════ RIGHT : HISTORY ═══════ -->
   <aside class="card">
-    <h2>📊 Entries</h2>
+    <h2>ENTRIES<span class="blink"></span></h2>
     <div id="entryArea"></div>
+    <div id="bulkActions" style="display:none;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn ghost small" id="exportBtn">⤓ EXPORT</button>
+      <button class="btn ghost small" id="importBtn">⤒ IMPORT</button>
+      <button class="btn ghost small" id="clearBtn">🗑 CLEAR</button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+    </div>
   </aside>
 
 </main>
 
 <footer class="footer">
-  Teaching Tracker © <span id="year"></span> · Developer <span class="dev">Agent sudo</span>
-  &nbsp;|&nbsp; Tutor <span class="dev">7306227436</span>
+  AGENT_SUDO © <span id="year"></span> · Dev <span class="dev">Bilal</span> · Tutor <span class="dev" id="tutorFoot">7306227436</span>
 </footer>
 
-<!-- ═══ Settings modal ═══ -->
+<!-- ═══ MODAL : ENTRY IDS ═══ -->
 <div class="backdrop" id="settingsModal" hidden>
   <div class="modal">
     <div class="modal-head">
-      <h3>⚙ Google Form Entry IDs</h3>
+      <h3>⚙ GOOGLE_FORM_ENTRY_IDS</h3>
       <button class="btn ghost small" id="closeSettings">✕</button>
     </div>
     <div class="modal-body">
-      <p style="color:var(--muted);font-size:12.5px;line-height:1.7">
-        Open the Google Form in your browser → right-click → <b>Inspect</b> → <b>Network</b> tab → fill the form once with dummy data → click <b>Submit</b> → click the <b>formResponse</b> request → <b>Payload</b> tab. Copy each <code>entry.XXXXXX</code> name below.
+      <p class="hint" style="margin:0 0 4px">
+        Open the form in Chrome → <code>F12</code> → <b>Network</b> tab → fill form once with dummy data → click <b>Submit</b> →
+        click the <code>formResponse</code> request → <b>Payload</b> tab → copy each <code>entry.XXXXX</code> name below.
       </p>
       <label class="field"><span>Google Form URL</span><input id="cfgUrl" /></label>
       <label class="field"><span>Registered Number of Tutor → entry</span><input id="cfgTutor" placeholder="entry.301464598" /></label>
@@ -205,8 +343,27 @@ a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
       <label class="field"><span>What you taught today → entry</span><input id="cfgText" placeholder="entry.XXXXXXXXX" /></label>
     </div>
     <div class="modal-foot">
-      <button class="btn ghost small" id="cancelSettings">Cancel</button>
-      <button class="btn primary small" id="saveSettings">Save</button>
+      <button class="btn ghost small" id="cancelSettings">CANCEL</button>
+      <button class="btn primary small" id="saveSettings">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL : TUTOR ═══ -->
+<div class="backdrop" id="tutorModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3>✎ CHANGE_TUTOR_NUMBER</h3>
+      <button class="btn ghost small" id="closeTutor">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="field"><span>Tutor Register Number</span><input id="newTutor" placeholder="7306227436" /></label>
+      <p class="hint" style="margin:0">Saved tutors appear as quick-pick chips. Current tutor is used in every new entry.</p>
+      <div class="chip-row" id="tutorChips" style="margin-top:6px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost small" id="cancelTutor">CANCEL</button>
+      <button class="btn primary small" id="saveTutor">SAVE</button>
     </div>
   </div>
 </div>
@@ -214,29 +371,69 @@ a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ═══════════════════════════════════════════════
-   Teaching Tracker — Agent sudo
-   ═══════════════════════════════════════════════ */
-const STORE = 'agent-sudo-tracker.v1';
+/* ═══════════════════════════════════════════════════════════
+   AGENT_SUDO — Teaching Tracker
+   Developer: Bilal
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── MATRIX RAIN ── */
+(function(){
+  const cvs = document.getElementById('matrix');
+  const ctx = cvs.getContext('2d');
+  let W, H, cols, drops;
+  const chars = 'アカサタナハマヤラワｱｲｳｴｵ0123456789ABCDEFabcdef<>[]{}#$%&*/\\|=+';
+  const fs = 14;
+
+  function resize(){
+    W = cvs.width  = window.innerWidth;
+    H = cvs.height = window.innerHeight;
+    cols = Math.floor(W / fs);
+    drops = Array(cols).fill(1);
+  }
+  function draw(){
+    ctx.fillStyle = 'rgba(2,4,10,0.08)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#00ffa3';
+    ctx.font = fs + 'px JetBrains Mono, monospace';
+    for(let i=0;i<cols;i++){
+      const ch = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(ch, i*fs, drops[i]*fs);
+      if(drops[i]*fs > H && Math.random() > 0.975) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  setInterval(draw, 55);
+})();
+
+/* ── STORE ── */
+const STORE = 'agent-sudo.v4';
 const DEFAULT_FORM = {
-  url :'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform',
+  url  :'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform',
   eTutor:'entry.301464598',
   eCode :'entry.256369685',
-  eText :''                     // fill in ⚙ Settings
+  eText :''
 };
+const DEFAULT_TUTOR = '7306227436';
 
 let state = load();
-
 function load(){
   try{
     const raw = localStorage.getItem(STORE);
     if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.entries)) return p; }
   }catch(e){}
-  return { form:{...DEFAULT_FORM}, entries:[] };
+  return {
+    tutor: DEFAULT_TUTOR,
+    tutors: [DEFAULT_TUTOR],
+    codes: [],
+    entries: [],
+    form: {...DEFAULT_FORM}
+  };
 }
 function save(){ localStorage.setItem(STORE, JSON.stringify(state)); }
 
-const $ = (s,r=document)=>r.querySelector(s);
+const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid = p => p+'-'+Math.random().toString(36).slice(2,9);
@@ -248,138 +445,274 @@ function toast(msg, type=''){
   el.className = 'toast '+type;
   el.textContent = msg;
   $('#toastWrap').appendChild(el);
-  setTimeout(()=>{el.style.opacity=0;el.style.transform='translateX(20px)'},2400);
-  setTimeout(()=>el.remove(),2800);
+  setTimeout(()=>{el.style.opacity=0;el.style.transform='translateX(30px)'},2400);
+  setTimeout(()=>el.remove(),2900);
 }
 
-/* ── Build prefilled Google Form link ── */
-function buildLink({topic, code, tutor, text}){
+/* ── BUILD PREFILLED LINK ── */
+function buildLink({tutor, code, text}){
   const cfg = state.form;
   const params = [
     [cfg.eTutor, tutor],
-    [cfg.eCode, code],
-    [cfg.eText, text]
-  ].filter(([k,v]) => k && v!==undefined && v!==null && v!=='')
+    [cfg.eCode , code ],
+    [cfg.eText , text ]
+  ].filter(([k,v]) => k && v !== undefined && v !== null && v !== '')
    .map(([k,v]) => `${k}=${encodeURIComponent(v)}`)
    .join('&');
   return `${cfg.url}?${params}`;
 }
 
-/* ── Topic pills ── */
-$$('.pill').forEach(p => {
-  p.addEventListener('click', ()=>{
-    $$('.pill').forEach(x=>x.classList.remove('active'));
-    p.classList.add('active');
-    currentTopic = p.dataset.topic;
-  });
-});
+/* ── TOPIC CHIPS ── */
+$$('#topicChips .chip').forEach(c => c.addEventListener('click', ()=>{
+  $$('#topicChips .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');
+  currentTopic = c.dataset.topic;
+}));
 
-/* ── Add entry ── */
+/* ── CODE CHIPS ── */
+function renderCodeChips(){
+  const wrap = $('#codeChips');
+  const codes = state.codes;
+  if(!codes.length){
+    wrap.innerHTML = `<span style="color:var(--dim);font-size:12px;font-family:var(--mono)">No saved codes yet — type one below and save it.</span>`;
+    return;
+  }
+  wrap.innerHTML = codes.map(c =>
+    `<span class="chip" data-code="${esc(c)}">${esc(c)}<span class="x" data-del="${esc(c)}">✕</span></span>`
+  ).join('');
+  $$('#codeChips .chip').forEach(chip => {
+    chip.addEventListener('click', e => {
+      if(e.target.classList.contains('x')) return;
+      $('#fCode').value = chip.dataset.code;
+    });
+  });
+  $$('#codeChips .x').forEach(x => x.addEventListener('click', e => {
+    e.stopPropagation();
+    state.codes = state.codes.filter(c => c !== x.dataset.del);
+    save(); renderCodeChips();
+  }));
+}
+
+/* ── TUTOR DISPLAY ── */
+function renderTutor(){
+  $('#tutorDisplay').textContent = state.tutor;
+  $('#tutorMini').textContent   = state.tutor;
+  $('#tutorFoot').textContent   = state.tutor;
+}
+
+/* ── ADD ENTRY ── */
 $('#addBtn').addEventListener('click', ()=>{
   const code = $('#fCode').value.trim();
-  const tutor = $('#fTutor').value.trim();
   const text = $('#fText').value.trim();
-  if(!code || !tutor || !text) return toast('All fields are required','error');
+  if(!code || !text) return toast('Sub-chapter code and text are required','error');
 
-  state.entries.unshift({ id:uid('e'), topic:currentTopic, code, tutor, text });
+  // Save code as reusable chip
+  if(!state.codes.includes(code)) state.codes.push(code);
+
+  state.entries.unshift({
+    id: uid('e'),
+    topic: currentTopic,
+    code,
+    tutor: state.tutor,
+    text,
+    ts: Date.now()
+  });
   save();
   $('#fCode').value = '';
   $('#fText').value = '';
+  renderCodeChips();
   renderEntries();
-  toast('Entry added');
+  toast('Entry saved ✓');
 });
 
-/* ── Preview & submit ── */
+/* ── PREVIEW ── */
 $('#previewBtn').addEventListener('click', ()=>{
   const code = $('#fCode').value.trim();
-  const tutor = $('#fTutor').value.trim();
   const text = $('#fText').value.trim();
-  if(!code || !tutor || !text) return toast('Fill all fields first','warn');
+  if(!code || !text) return toast('Fill in code and text first','warn');
+
+  const link = buildLink({tutor: state.tutor, code, text});
+  const box = $('#previewBox');
 
   if(!state.form.eText){
-    $('#previewBox').innerHTML = `<div style="padding:12px;border:1px solid var(--warn);border-radius:10px;background:rgba(255,176,32,.06);color:var(--warn);font-size:12.5px">
-      ⚠ Missing <b>"What you taught today"</b> entry ID. Open <b>⚙ Entry IDs</b> and paste it. For now, use the Open Google Form button to submit manually.
-    </div>`;
+    box.innerHTML = `
+      <div class="preview" style="border-color:rgba(255,176,32,.5)">
+        <div class="lbl" style="color:var(--warn)">⚠ MISSING_TEXT_ENTRY_ID</div>
+        <p style="font-size:12.5px;color:var(--muted);font-family:var(--mono);line-height:1.6">
+          Open <b>⚙ ENTRY_IDS</b> and paste the entry ID for <code>"What you taught today"</code>.
+          Until then, use <b>OPEN_FORM</b> to submit manually.
+        </p>
+      </div>`;
     return;
   }
 
-  const link = buildLink({topic:currentTopic, code, tutor, text});
-  $('#previewBox').innerHTML = `
-    <div style="padding:12px;border:1px solid var(--border2);border-radius:10px;background:var(--bg2)">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Pre-filled Link</div>
-      <div style="font-family:var(--mono);font-size:11px;word-break:break-all;color:var(--accent2);margin-bottom:10px">${esc(link)}</div>
-      <a class="btn primary small" href="${link}" target="_blank" rel="noopener">🔗 Open Pre-filled Form</a>
+  box.innerHTML = `
+    <div class="preview">
+      <div class="lbl">PREFILLED_LINK</div>
+      <div class="url">${esc(link)}</div>
+      <a class="btn primary small" href="${link}" target="_blank" rel="noopener">⚡ OPEN_PREFILLED_FORM</a>
     </div>`;
 });
 
-/* ── Render entries ── */
+/* ── RENDER ENTRIES ── */
 function renderEntries(){
   const area = $('#entryArea');
   if(!state.entries.length){
-    area.innerHTML = `<div class="empty"><div class="ei">📭</div><h3>No entries yet</h3><p>Add your first entry on the left.</p></div>`;
+    area.innerHTML = `
+      <div class="empty">
+        <div class="ei">📭</div>
+        <h3>// no_entries</h3>
+        <p>Add your first entry on the left.</p>
+      </div>`;
+    $('#bulkActions').style.display = 'none';
     return;
   }
+  $('#bulkActions').style.display = 'flex';
+
   area.innerHTML = `<div class="entry-list">${state.entries.map(e => {
     const link = state.form.eText ? buildLink(e) : '';
+    const time = new Date(e.ts).toLocaleString('en-IN',{hour12:false,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
     return `
       <div class="entry">
         <div class="entry-head">
           <span class="entry-code">${esc(e.code)}</span>
           <span class="entry-topic">${esc(e.topic)}</span>
-          <span class="entry-tutor">${esc(e.tutor)}</span>
+          <span class="entry-time">${esc(time)}</span>
         </div>
         <div class="entry-text">${esc(e.text)}</div>
         <div class="entry-actions">
           ${link
-            ? `<a class="btn primary small" href="${link}" target="_blank" rel="noopener">Submit ↗</a>`
-            : `<a class="btn outline small" href="${state.form.url}" target="_blank" rel="noopener">Submit Manually ↗</a>`}
-          <button class="btn ghost small" data-copy="${esc(e.text)}">⧉ Copy Text</button>
-          <button class="btn danger small" data-del="${e.id}">🗑 Delete</button>
+            ? `<a class="btn primary small" href="${link}" target="_blank" rel="noopener">⚡ SUBMIT</a>`
+            : `<a class="btn primary small" href="${state.form.url}" target="_blank" rel="noopener">⚡ SUBMIT_MANUAL</a>`}
+          <button class="btn ghost small" data-copy="${esc(e.text)}">⧉ COPY</button>
+          <button class="btn danger small" data-del="${e.id}">🗑</button>
         </div>
       </div>`;
   }).join('')}</div>`;
 
   $$('.entry [data-copy]').forEach(b => b.addEventListener('click', async ()=>{
-    try{ await navigator.clipboard.writeText(b.dataset.copy); toast('Text copied'); }
+    try{ await navigator.clipboard.writeText(b.dataset.copy); toast('Copied ✓'); }
     catch{ toast('Copy failed','error'); }
   }));
   $$('.entry [data-del]').forEach(b => b.addEventListener('click', ()=>{
+    if(!confirm('Delete this entry?')) return;
     state.entries = state.entries.filter(x => x.id !== b.dataset.del);
     save(); renderEntries(); toast('Deleted');
   }));
 }
 
-/* ── Settings ── */
+/* ── BULK ACTIONS ── */
+$('#exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `agent-sudo-${Date.now()}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Exported ✓');
+});
+$('#importBtn').addEventListener('click', ()=> $('#importFile').click());
+$('#importFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      if(!d.entries) throw new Error('bad file');
+      state = d;
+      save(); renderAll();
+      toast('Imported ✓');
+    }catch(err){ toast('Import failed','error'); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+$('#clearBtn').addEventListener('click', ()=>{
+  if(!confirm('Delete ALL entries? This cannot be undone.')) return;
+  state.entries = [];
+  save(); renderEntries(); toast('Cleared');
+});
+
+/* ── SETTINGS MODAL ── */
 function openSettings(){
-  $('#cfgUrl').value  = state.form.url;
-  $('#cfgTutor').value= state.form.eTutor;
-  $('#cfgCode').value = state.form.eCode;
-  $('#cfgText').value = state.form.eText;
+  const f = state.form;
+  $('#cfgUrl').value   = f.url;
+  $('#cfgTutor').value = f.eTutor;
+  $('#cfgCode').value  = f.eCode;
+  $('#cfgText').value  = f.eText;
   $('#settingsModal').hidden = false;
   document.body.style.overflow = 'hidden';
 }
-function closeSettings(){
-  $('#settingsModal').hidden = true;
-  document.body.style.overflow = '';
-}
+function closeSettings(){ $('#settingsModal').hidden = true; document.body.style.overflow=''; }
 $('#settingsBtn').addEventListener('click', openSettings);
 $('#closeSettings').addEventListener('click', closeSettings);
 $('#cancelSettings').addEventListener('click', closeSettings);
-$('#settingsModal').addEventListener('click', e => { if(e.target.id === 'settingsModal') closeSettings(); });
+$('#settingsModal').addEventListener('click', e => { if(e.target.id==='settingsModal') closeSettings(); });
+
 $('#saveSettings').addEventListener('click', ()=>{
   state.form = {
-    url  : $('#cfgUrl').value.trim()   || DEFAULT_FORM.url,
-    eTutor:$('#cfgTutor').value.trim() || DEFAULT_FORM.eTutor,
-    eCode :$('#cfgCode').value.trim()  || DEFAULT_FORM.eCode,
-    eText :$('#cfgText').value.trim()
+    url   : $('#cfgUrl').value.trim()   || DEFAULT_FORM.url,
+    eTutor: $('#cfgTutor').value.trim() || DEFAULT_FORM.eTutor,
+    eCode : $('#cfgCode').value.trim()  || DEFAULT_FORM.eCode,
+    eText : $('#cfgText').value.trim()
   };
   save(); closeSettings(); renderEntries();
-  toast('Settings saved');
+  toast('Entry IDs saved ✓');
 });
 
-/* ── Init ── */
+/* ── TUTOR MODAL ── */
+function openTutor(){
+  $('#newTutor').value = state.tutor;
+  renderTutorChips();
+  $('#tutorModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeTutor(){ $('#tutorModal').hidden = true; document.body.style.overflow=''; }
+$('#changeTutorBtn').addEventListener('click', openTutor);
+$('#closeTutor').addEventListener('click', closeTutor);
+$('#cancelTutor').addEventListener('click', closeTutor);
+$('#tutorModal').addEventListener('click', e => { if(e.target.id==='tutorModal') closeTutor(); });
+
+function renderTutorChips(){
+  $('#tutorChips').innerHTML = state.tutors.map(t =>
+    `<span class="chip" data-t="${esc(t)}">${esc(t)}<span class="x" data-del="${esc(t)}">✕</span></span>`
+  ).join('');
+  $$('#tutorChips .chip').forEach(c => c.addEventListener('click', e => {
+    if(e.target.classList.contains('x')) return;
+    $('#newTutor').value = c.dataset.t;
+  }));
+  $$('#tutorChips .x').forEach(x => x.addEventListener('click', e => {
+    e.stopPropagation();
+    if(state.tutors.length <= 1) return toast('At least one tutor required','warn');
+    state.tutors = state.tutors.filter(t => t !== x.dataset.del);
+    if(state.tutor === x.dataset.del) state.tutor = state.tutors[0];
+    save(); renderTutorChips(); renderTutor();
+  }));
+}
+
+$('#saveTutor').addEventListener('click', ()=>{
+  const v = $('#newTutor').value.trim();
+  if(!v) return toast('Tutor number required','error');
+  state.tutor = v;
+  if(!state.tutors.includes(v)) state.tutors.push(v);
+  save();
+  renderTutor();
+  closeTutor();
+  toast('Tutor updated ✓');
+});
+
+/* ── INIT ── */
+function renderAll(){
+  renderTutor();
+  renderCodeChips();
+  renderEntries();
+}
 $('#year').textContent = new Date().getFullYear();
-renderEntries();
+renderAll();
+
+/* ── keyboard shortcut: Ctrl+Enter to save ── */
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); $('#addBtn').click(); }
+  if(e.key === 'Escape'){ closeSettings(); closeTutor(); }
+});
 </script>
 </body>
 </html>
