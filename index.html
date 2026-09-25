@@ -3,291 +3,574 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AGENT_SUDO // AUTO_FILL</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>Agent Sudo — Teaching Tracker</title>
+<meta name="description" content="Agent Sudo — teaching session tracker with pre-filled form submissions." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2310B981'/><text x='50' y='70' font-size='52' font-weight='700' text-anchor='middle' fill='%230A0A0B' font-family='system-ui'>A</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#02040a;--bg2:#05080f;--panel:#0a1120;--panel2:#0d1626;
-  --border:#152340;--border2:#1e3358;--text:#d6e8ff;--muted:#7d93b3;--dim:#3d5273;
-  --accent:#00ffa3;--accent2:#00c2ff;--danger:#ff3d6e;--warn:#ffb020;--ok:#00ff88;
-  --mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Inter',system-ui,sans-serif;
+  --bg:#0A0A0B; --surface:#101113; --surface-2:#16181B; --surface-3:#1C1F23;
+  --border:#1F2124; --border-hover:#2E3238; --border-strong:#3A3F46;
+  --text:#EDEEF0; --text-2:#8A8F98; --text-3:#5E646E;
+  --accent:#10B981; --accent-hover:#34D399;
+  --accent-soft:rgba(16,185,129,0.12); --accent-glow:rgba(16,185,129,0.30);
+  --accent-deep:#047857;
+  --danger:#F43F5E; --danger-soft:rgba(244,63,94,0.12); --warn:#F59E0B;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --r-xs:6px; --r-sm:8px; --r-md:10px; --r-lg:14px; --r-xl:18px;
+  --sh-sm:0 1px 2px rgba(0,0,0,0.4);
+  --sh-md:0 4px 16px rgba(0,0,0,0.45);
+  --sh-lg:0 16px 48px rgba(0,0,0,0.55);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease2:cubic-bezier(0.4,0,0.2,1);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
-#matrix{position:fixed;inset:0;z-index:0;opacity:.1;pointer-events:none}
-.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,255,163,.015) 0px,rgba(0,255,163,.015) 1px,transparent 1px,transparent 3px);mix-blend-mode:overlay}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(700px 400px at 10% -10%,rgba(0,255,163,.13),transparent 60%),
-             radial-gradient(900px 500px at 90% 0%,rgba(0,194,255,.09),transparent 60%)}
-::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:#1c2c48;border-radius:5px;border:2px solid var(--bg2)}
-::selection{background:rgba(0,255,163,.35);color:#fff}
-a{color:var(--accent2);text-decoration:none}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);font-size:14px;line-height:1.55;color:var(--text);
+  background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv11','ss01';letter-spacing:-0.006em;overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--bg)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:5px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--border-strong)}
 
-.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:14px 22px;background:rgba(2,4,10,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-family:var(--mono);
-  font-weight:700;font-size:15px;color:#02130d;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 0 22px -4px rgba(0,255,163,.7);animation:logoPulse 3s ease-in-out infinite}
-@keyframes logoPulse{0%,100%{box-shadow:0 0 22px -4px rgba(0,255,163,.7)}50%{box-shadow:0 0 32px -2px rgba(0,255,163,.9)}}
-.brand h1{font-size:16px;font-weight:800;font-family:var(--mono);letter-spacing:-.3px}
-.brand h1 span{color:var(--accent);text-shadow:0 0 12px rgba(0,255,163,.7)}
-.brand small{font-size:10px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:var(--mono)}
-.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.dev-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;
-  color:var(--accent);padding:7px 12px;border-radius:9px;border:1px solid rgba(0,255,163,.35);
-  background:rgba(0,255,163,.06);text-shadow:0 0 8px rgba(0,255,163,.5)}
-.dev-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);
-  box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+/* Aurora */
+.aurora{position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(80px);opacity:.55}
+.aurora span{position:absolute;border-radius:50%;animation:auroraMove 24s var(--ease2) infinite alternate}
+.aurora span:nth-child(1){width:600px;height:600px;top:5%;left:10%;background:radial-gradient(circle,rgba(16,185,129,.55),transparent 65%);animation-duration:22s}
+.aurora span:nth-child(2){width:700px;height:700px;top:30%;right:5%;background:radial-gradient(circle,rgba(52,211,153,.30),transparent 65%);animation-duration:28s;animation-delay:-6s}
+.aurora span:nth-child(3){width:500px;height:500px;bottom:5%;left:35%;background:radial-gradient(circle,rgba(4,120,87,.35),transparent 65%);animation-duration:26s;animation-delay:-12s}
+@keyframes auroraMove{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,-40px) scale(1.15)}100%{transform:translate(-40px,60px) scale(0.95)}}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:9px;
-  font-family:var(--mono);font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid transparent;
-  transition:all .18s;white-space:nowrap;user-select:none;letter-spacing:.3px}
-.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;box-shadow:0 4px 18px -6px rgba(0,255,163,.7)}
-.btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.btn.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn.outline{background:transparent;color:var(--accent);border-color:rgba(0,255,163,.4)}
-.btn.outline:hover{background:rgba(0,255,163,.08);border-color:var(--accent)}
-.btn.ghost{background:var(--panel);color:var(--muted);border-color:var(--border)}
-.btn.ghost:hover{color:var(--text);border-color:var(--border2);background:var(--panel2)}
-.btn.danger{color:var(--danger);border-color:rgba(255,61,110,.35)}
-.btn.danger:hover{background:rgba(255,61,110,.08);border-color:var(--danger)}
-.btn.small{padding:7px 12px;font-size:11.5px}
-.btn.full{width:100%}
+/* App shell */
+.app{opacity:0;transition:opacity .5s var(--ease)}
+.app.visible{opacity:1}
 
-.layout{display:grid;grid-template-columns:440px 1fr;gap:20px;padding:22px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
-@media(max-width:980px){.layout{grid-template-columns:1fr}}
+/* Header */
+.header{position:sticky;top:0;z-index:50;background:rgba(10,10,11,.72);
+  backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%);
+  border-bottom:1px solid var(--border)}
+.header-inner{max-width:1440px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.brand-mark{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-deep));
+  box-shadow:0 0 0 1px rgba(16,185,129,.3),0 8px 20px -8px var(--accent-glow);
+  color:var(--bg);font-weight:700;font-size:14px;letter-spacing:-0.02em}
+.brand-name{font-weight:600;font-size:14px;letter-spacing:-0.005em}
+.brand-name .accent{color:var(--accent)}
+.nav{display:flex;align-items:center;gap:2px;margin-left:12px}
+.nav-link{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:500;color:var(--text-2);transition:all .15s var(--ease2);cursor:pointer}
+.nav-link:hover{background:var(--surface-2);color:var(--text)}
+.nav-link.active{background:var(--surface-2);color:var(--text)}
+.nav-link svg{width:14px;height:14px;flex-shrink:0}
+.header-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:34px;height:34px;border-radius:var(--r-sm);display:grid;place-items:center;
+  background:transparent;color:var(--text-3);transition:all .15s var(--ease2);cursor:pointer}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+.icon-btn svg{width:15px;height:15px}
+.user-menu{display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border-radius:999px;
+  border:1px solid var(--border);background:var(--surface);transition:all .15s var(--ease2)}
+.user-avatar{width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:var(--bg);
+  display:grid;place-items:center;font-weight:600;font-size:11.5px;letter-spacing:-0.02em}
+.user-name{font-size:12.5px;font-weight:500;color:var(--text-2)}
+@media(max-width:720px){
+  .header-inner{padding:0 16px;height:58px}
+  .nav-link span{display:none}
+  .user-name{display:none}
+}
 
-.card{background:linear-gradient(180deg,rgba(10,17,32,.92),rgba(5,8,15,.92));
-  border:1px solid var(--border);border-radius:15px;padding:20px;position:relative;overflow:hidden;
-  backdrop-filter:blur(10px);box-shadow:0 20px 60px -30px rgba(0,0,0,.9)}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.55}
-.card h2{font-size:13px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);letter-spacing:.6px;text-transform:uppercase}
-.card h2::before{content:'//';color:var(--accent);font-weight:700;text-shadow:0 0 8px var(--accent)}
-.blink{display:inline-block;width:7px;height:13px;background:var(--accent);margin-left:2px;
-  animation:blink 1s steps(2) infinite;vertical-align:middle;box-shadow:0 0 8px var(--accent)}
-@keyframes blink{50%{opacity:0}}
+.page{max-width:1440px;margin:0 auto;padding:32px 28px 80px;position:relative;z-index:1}
+@media(max-width:720px){.page{padding:20px 16px 60px}}
 
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.field>span{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
-  font-family:var(--mono);display:flex;align-items:center;gap:6px}
-.field>span::before{content:'>';color:var(--accent);font-weight:700}
-.field input,.field textarea{background:var(--bg2);border:1px solid var(--border);border-radius:9px;
-  padding:11px 13px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:all .16s;width:100%}
-.field textarea{resize:vertical;min-height:240px;white-space:pre;line-height:1.65}
-.field input:focus,.field textarea:focus{border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(0,255,163,.12),0 0 18px -4px rgba(0,255,163,.4)}
-.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.hero{margin-bottom:28px;max-width:640px}
+.hero-title{font-size:26px;font-weight:600;letter-spacing:-0.025em;line-height:1.2;margin-bottom:8px;
+  background:linear-gradient(180deg,#fff 0%,#A8AEB6 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:14px;color:var(--text-2);line-height:1.6}
 
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.row .spacer{flex:1}
-.hint{font-size:11px;color:var(--dim);font-family:var(--mono);line-height:1.7}
-.hint code{background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--accent);border:1px solid var(--border)}
-.hint b{color:var(--muted)}
+.view{display:none;animation:viewIn .4s var(--ease)}
+.view.active{display:block}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-.url-list{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow-y:auto;padding-right:5px}
-.url-item{background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
-  border:1px solid var(--border);border-radius:11px;padding:14px;transition:all .2s;position:relative;
-  animation:slideIn .3s ease both;overflow:hidden}
-@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.url-item:hover{border-color:var(--border2);transform:translateY(-1px)}
-.url-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
-  background:linear-gradient(180deg,var(--accent),transparent);opacity:.7;transition:all .3s}
-.url-item.opened{opacity:.55}
-.url-item.opened::before{background:linear-gradient(180deg,var(--ok),transparent);box-shadow:0 0 12px var(--ok)}
-.url-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.url-num-badge{font-family:var(--mono);font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;
-  background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,194,255,.1));color:var(--accent);
-  border:1px solid rgba(0,255,163,.4);text-shadow:0 0 8px rgba(0,255,163,.6)}
-.url-item.opened .url-num-badge{background:rgba(0,255,136,.15);color:var(--ok);border-color:rgba(0,255,136,.4);text-shadow:0 0 8px rgba(0,255,136,.6)}
-.url-date{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);letter-spacing:.5px}
-.url-meta{font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:5px;
-  background:var(--bg2);border:1px solid var(--border);color:var(--muted)}
-.url-check{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ok);text-shadow:0 0 8px var(--ok)}
-.url-actions{display:flex;gap:6px;flex-wrap:wrap}
-.submit-big{flex:1;min-width:130px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;
-  font-weight:800;font-size:12px;padding:9px 16px;border-radius:8px;border:0;cursor:pointer;
-  box-shadow:0 4px 16px -6px rgba(0,255,163,.7);transition:all .18s;
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:var(--mono);letter-spacing:.5px}
-.submit-big:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 8px 24px -6px rgba(0,255,163,.95)}
-.url-item.opened .submit-big{background:linear-gradient(135deg,rgba(0,255,136,.9),rgba(0,194,255,.7));opacity:.75}
+.grid{display:grid;grid-template-columns:minmax(340px,420px) 1fr;gap:20px;align-items:start}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
 
-.empty{text-align:center;padding:50px 20px;border:1px dashed var(--border2);border-radius:13px;background:rgba(10,17,32,.4)}
-.empty .ei{font-size:44px;margin-bottom:10px;opacity:.85;filter:drop-shadow(0 0 18px rgba(0,255,163,.4))}
-.empty h3{font-size:15px;margin-bottom:5px;font-family:var(--mono);color:var(--muted)}
-.empty p{color:var(--dim);font-size:11.5px;font-family:var(--mono)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--sh-sm);animation:fadeUp .5s var(--ease) both}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:12px;font-weight:600;letter-spacing:0.05em;color:var(--text-2);
+  text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.card-title-mark{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.card-body{padding:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center}
-.stat .n{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--accent);text-shadow:0 0 12px rgba(0,255,163,.5)}
-.stat .l{font-size:9.5px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-top:2px}
-.stat.ok .n{color:var(--ok);text-shadow:0 0 12px rgba(0,255,136,.5)}
+.form-field{margin-bottom:16px}
+.form-label{display:block;font-size:12.5px;font-weight:500;color:var(--text-2);margin-bottom:7px}
+.form-label .req{color:var(--accent);margin-left:3px}
+.form-input,.form-textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:0 13px;height:40px;font-family:inherit;font-size:13.5px;
+  color:var(--text);transition:all .15s var(--ease2);outline:none}
+.form-textarea{padding:11px 13px;height:auto;min-height:220px;resize:vertical;
+  font-family:var(--mono);font-size:12.5px;line-height:1.7}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-3)}
+.form-input:hover,.form-textarea:hover{border-color:var(--border-hover)}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent);background:var(--surface-3);
+  box-shadow:0 0 0 3px var(--accent-soft),0 0 24px -8px var(--accent-glow)}
+.form-hint{font-size:12px;color:var(--text-3);margin-top:6px;line-height:1.55}
+.form-hint code,.form-info code{font-family:var(--mono);font-size:11.5px;padding:1px 5px;border-radius:4px;
+  background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+.form-info{padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);
+  font-size:12.5px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.form-info-title{font-size:11px;font-weight:600;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.form-info ul{list-style:none}
+.form-info li{display:flex;align-items:flex-start;gap:8px;padding:3px 0}
+.form-info li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--text-3);margin-top:8px;flex-shrink:0}
+.form-info code{background:var(--bg);color:var(--accent)}
 
-.progress{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
-.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
-  width:0%;transition:width .4s ease;box-shadow:0 0 12px rgba(0,255,163,.6)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 14px;
+  border-radius:var(--r-sm);font-size:13px;font-weight:500;transition:all .15s var(--ease2);
+  white-space:nowrap;user-select:none;border:1px solid transparent}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-primary{background:linear-gradient(180deg,#12C68A,var(--accent));color:#001a10;font-weight:600;
+  box-shadow:0 0 0 1px rgba(16,185,129,.5),0 8px 20px -6px var(--accent-glow)}
+.btn-primary:hover{background:linear-gradient(180deg,#2ED499,var(--accent-hover));
+  box-shadow:0 0 0 1px rgba(52,211,153,.6),0 10px 26px -6px var(--accent-glow);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface-2);color:var(--text);border-color:var(--border)}
+.btn-secondary:hover{background:var(--surface-3);border-color:var(--border-hover)}
+.btn-ghost{color:var(--text-2)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn-sm{height:32px;padding:0 11px;font-size:12.5px}
+.btn-lg{height:42px;padding:0 18px;font-size:14px}
+.btn-block{width:100%}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.entry-ids{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--mono);font-size:10px;
-  background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;color:var(--muted)}
-.entry-ids b{color:var(--accent);font-weight:700;display:block;font-size:9px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
-.entry-ids span{color:var(--accent2);word-break:break-all;font-size:9.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stat{background:var(--surface);padding:14px 18px}
+.stat-value{font-size:22px;font-weight:600;letter-spacing:-0.03em;color:var(--text);
+  font-feature-settings:'tnum';line-height:1.1}
+.stat-value.accent{color:var(--accent)}
+.stat-label{font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.06em;margin-top:2px}
 
-.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:linear-gradient(135deg,#0a1120,#05080f);border:1px solid var(--border2);
-  border-left:3px solid var(--accent);border-radius:9px;padding:11px 15px;color:var(--text);font-size:12px;
-  font-family:var(--mono);box-shadow:0 20px 60px -20px rgba(0,0,0,.9),0 0 20px -4px rgba(0,255,163,.3);
-  animation:tin .25s ease;max-width:320px;pointer-events:auto}
-.toast.error{border-left-color:var(--danger)}
-.toast.warn{border-left-color:var(--warn)}
-.toast.ok{border-left-color:var(--ok)}
-@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.progress-wrap{padding:14px 20px;border-bottom:1px solid var(--border)}
+.progress-track{height:4px;background:var(--surface-3);border-radius:2px;overflow:hidden;position:relative}
+.progress-fill{height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent-deep),var(--accent),var(--accent-hover));
+  border-radius:2px;transition:width .6s var(--ease);box-shadow:0 0 12px var(--accent-glow)}
 
-.footer{padding:20px;border-top:1px solid var(--border);color:var(--dim);font-size:11px;text-align:center;
-  font-family:var(--mono);position:relative;z-index:2;letter-spacing:.5px}
-.footer .dev{color:var(--accent);font-weight:700;text-shadow:0 0 8px rgba(0,255,163,.5)}
+.queue-bar{padding:12px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border)}
+.queue-search{flex:1;min-width:140px;position:relative}
+.queue-search input{width:100%;height:32px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:0 11px 0 32px;font-size:12.5px;color:var(--text);outline:none;
+  transition:all .15s var(--ease2)}
+.queue-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.queue-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  width:13px;height:13px;color:var(--text-3);pointer-events:none}
+
+.queue-list{display:flex;flex-direction:column;max-height:calc(100vh - 400px);min-height:280px;
+  overflow-y:auto;padding:8px}
+.queue-list::-webkit-scrollbar{width:8px}
+.queue-list::-webkit-scrollbar-thumb{background:var(--surface-3);border:2px solid var(--surface);border-radius:6px}
+
+.item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--r-sm);
+  border:1px solid transparent;transition:all .15s var(--ease2);animation:fadeUp .3s var(--ease) both}
+.item:hover{background:var(--surface-2);border-color:var(--border)}
+.item.done{opacity:.5}
+.item.done .item-num{background:var(--accent-soft);color:var(--accent);border-color:rgba(16,185,129,0.35)}
+.item-num{width:30px;height:30px;flex-shrink:0;border-radius:8px;background:var(--surface-2);
+  border:1px solid var(--border);color:var(--text-2);display:grid;place-items:center;
+  font-family:var(--mono);font-size:11px;font-weight:500;transition:all .2s var(--ease2)}
+.item-body{flex:1;min-width:0}
+.item-date{font-size:13.5px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item-date .sent{font-size:11px;font-weight:500;color:var(--accent);padding:1px 6px;border-radius:4px;
+  background:var(--accent-soft);display:inline-flex;align-items:center;gap:4px}
+.item-date .sent::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.item-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.item-tag{font-size:11px;color:var(--text-3);padding:1px 7px;border-radius:4px;
+  background:var(--surface-2);border:1px solid var(--border);font-family:var(--mono)}
+.item-tag.code{color:var(--accent);border-color:rgba(16,185,129,0.25);background:var(--accent-soft)}
+.item-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.submit-btn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:var(--r-sm);
+  background:linear-gradient(180deg,#12C68A,var(--accent));color:#001a10;font-size:12.5px;font-weight:600;
+  border:1px solid rgba(16,185,129,0.5);
+  box-shadow:0 1px 0 rgba(255,255,255,0.15) inset,0 4px 14px -4px var(--accent-glow);
+  transition:all .15s var(--ease2)}
+.submit-btn svg{width:12px;height:12px}
+.submit-btn:hover{background:linear-gradient(180deg,#2ED499,var(--accent-hover));transform:translateY(-1px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.2) inset,0 6px 18px -4px var(--accent-glow)}
+.item.done .submit-btn{background:var(--surface-2);color:var(--text-3);border-color:var(--border);box-shadow:none}
+
+.empty{padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-icon{width:52px;height:52px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);
+  display:grid;place-items:center;color:var(--text-3);margin-bottom:6px}
+.empty-icon svg{width:24px;height:24px}
+.empty-title{font-size:14.5px;font-weight:500;color:var(--text)}
+.empty-sub{font-size:13px;color:var(--text-3);max-width:300px}
+
+.disclosure{border-top:1px solid var(--border)}
+.disclosure summary{list-style:none;cursor:pointer;padding:12px 20px;font-size:12.5px;font-weight:500;
+  color:var(--text-3);display:flex;align-items:center;gap:8px;user-select:none;transition:color .15s}
+.disclosure summary::-webkit-details-marker{display:none}
+.disclosure summary:hover{color:var(--text-2)}
+.disclosure summary::before{content:'';width:0;height:0;border-left:4px solid currentColor;
+  border-top:3px solid transparent;border-bottom:3px solid transparent;transition:transform .2s var(--ease)}
+.disclosure[open] summary::before{transform:rotate(90deg)}
+.disclosure[open] summary{color:var(--text-2)}
+
+.id-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);
+  border-top:1px solid var(--border)}
+.id-cell{background:var(--surface);padding:10px 16px}
+.id-cell .k{font-size:10.5px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em}
+.id-cell .v{font-family:var(--mono);font-size:11.5px;color:var(--accent);word-break:break-all;margin-top:2px}
+.id-cell .v.ok::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--accent);margin-right:6px;vertical-align:middle;box-shadow:0 0 8px var(--accent-glow)}
+
+.list-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);
+  transition:background .15s var(--ease2)}
+.list-row:last-child{border-bottom:0}
+.list-row:hover{background:var(--surface-2)}
+.list-row-main{flex:1;min-width:0}
+.list-row-title{font-size:13.5px;font-weight:500}
+.list-row-sub{font-size:12px;color:var(--text-3);margin-top:2px}
+
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:20px}
+.insight-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:16px}
+.insight-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.06em;margin-bottom:8px}
+.insight-value{font-size:26px;font-weight:600;letter-spacing:-0.03em;color:var(--text);
+  font-feature-settings:'tnum';line-height:1.1}
+.insight-sub{font-size:12px;color:var(--text-3);margin-top:4px}
+
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;padding:16px;margin-top:8px}
+.bar{flex:1;background:var(--surface-3);border-radius:3px 3px 0 0;min-height:4px;position:relative;
+  transition:all .6s var(--ease);animation:barGrow 1s var(--ease) both}
+.bar.active{background:linear-gradient(180deg,var(--accent-hover),var(--accent-deep))}
+.bar:hover{filter:brightness(1.3)}
+@keyframes barGrow{from{height:0 !important}}
+.bar-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:10.5px;color:var(--text-3);font-family:var(--mono)}
+
+.palette{position:fixed;inset:0;z-index:150;background:rgba(10,10,11,.7);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:grid;align-items:flex-start;justify-content:center;padding:80px 20px 20px;
+  opacity:0;visibility:hidden;transition:opacity .18s var(--ease2),visibility .18s}
+.palette.open{opacity:1;visibility:visible}
+.palette-box{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border-hover);
+  border-radius:var(--r-lg);box-shadow:0 32px 80px -20px rgba(0,0,0,.9);overflow:hidden;
+  transform:scale(.96) translateY(-8px);transition:transform .2s var(--ease)}
+.palette.open .palette-box{transform:scale(1) translateY(0)}
+.palette-input{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.palette-input svg{width:16px;height:16px;color:var(--text-3);flex-shrink:0}
+.palette-input input{flex:1;background:none;border:0;outline:none;font-size:14.5px;color:var(--text)}
+.palette-input input::placeholder{color:var(--text-3)}
+.palette-list{max-height:340px;overflow-y:auto;padding:8px}
+.palette-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);
+  cursor:pointer;transition:background .1s;font-size:13.5px}
+.palette-item:hover,.palette-item.selected{background:var(--surface-2)}
+.palette-item.selected{background:var(--surface-3)}
+.palette-item-icon{width:30px;height:30px;border-radius:7px;background:var(--surface-3);
+  border:1px solid var(--border);display:grid;place-items:center;color:var(--text-2);flex-shrink:0}
+.palette-item-icon svg{width:14px;height:14px}
+.palette-item-body{flex:1;min-width:0}
+.palette-item-title{font-weight:500;color:var(--text)}
+.palette-item-desc{font-size:11.5px;color:var(--text-3);margin-top:1px}
+.palette-empty{padding:32px 20px;text-align:center;font-size:13px;color:var(--text-3)}
+.palette-foot{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:14px;
+  font-size:11.5px;color:var(--text-3)}
+.palette-foot kbd{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;
+  background:var(--surface-2);border:1px solid var(--border)}
+
+.toasts{position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:8px;
+  pointer-events:none;max-width:360px}
+.toast{background:var(--surface-2);border:1px solid var(--border-hover);border-radius:var(--r-md);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh-lg);
+  animation:toastIn .32s var(--ease);pointer-events:auto;min-width:220px}
+.toast::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);
+  flex-shrink:0;box-shadow:0 0 8px var(--accent-glow)}
+.toast.error::before{background:var(--danger);box-shadow:0 0 8px rgba(244,63,94,.4)}
+.toast.warn::before{background:var(--warn)}
+.toast-msg{font-size:13px;font-weight:500;letter-spacing:-0.005em}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.footer{border-top:1px solid var(--border);padding:24px 28px;background:var(--surface);margin-top:40px}
+.footer-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+  gap:20px;flex-wrap:wrap}
+.footer-left{display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--text-3);flex-wrap:wrap}
+.footer-left .dot{width:3px;height:3px;border-radius:50%;background:var(--text-3)}
+.footer-link{color:var(--text-2);transition:color .15s;display:inline-flex;align-items:center;gap:5px}
+.footer-link:hover{color:var(--accent)}
+.footer-link svg{width:12px;height:12px}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms !important;transition-duration:0.01ms !important}
+}
 </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="scanlines"></div>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
 
-<header class="topbar">
-  <div class="brand">
-    <div class="logo">&lt;/&gt;</div>
-    <div>
-      <h1><span>AGENT</span>_SUDO</h1>
-      <small>auto_fill · tracker</small>
-    </div>
-  </div>
-  <div class="top-actions">
-    <span class="dev-badge">root@agent-sudo</span>
-    <a class="btn ghost small" target="_blank" rel="noopener"
-       href="https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform">
-      ↗ VIEW_FORM
-    </a>
-  </div>
-</header>
+<div class="app" id="app">
 
-<main class="layout">
-
-  <!-- ══════════ LEFT: CONFIG ══════════ -->
-  <section class="card">
-    <h2>CONFIG<span class="blink"></span></h2>
-
-    <div class="field">
-      <span>Reg Number of Tutor</span>
-      <input id="fTutor" value="7306227436" placeholder="7306227436" />
-    </div>
-
-    <div class="field">
-      <span>Chapter Code</span>
-      <input id="fCode" placeholder="SMSC01 / EH-01 / DM-02 / stock market…" autocomplete="off" />
-    </div>
-
-    <div class="field">
-      <span>Paste Data (Date + Slot + Batch per line)</span>
-      <textarea id="fData" placeholder="2026-07-24, 12 pm to 2 pm, A
-2026-07-27, 12 pm to 2 pm, A
-2026-07-29, 12 pm to 2 pm, A
-
-or full format:
-
-Fri Jul 24 2026 00:00:00 GMT+0530, 7306227436, Minhaj, ernakulam, stock market, 12 pm to 2 pm, a
-Mon Jul 27 2026 00:00:00 GMT+0530, 7306227436, Minhaj, ernakulam, stock market, 12 pm to 2 pm, a"></textarea>
-    </div>
-
-    <div class="hint" style="margin-top:-6px;margin-bottom:12px">
-      <b>Accepted formats:</b><br>
-      • <code>date, slot, batch</code><br>
-      • <code>date, tutor, name, district, topic, slot, batch</code><br>
-      • <code>date</code> only (uses defaults 12 pm to 2 pm / A)<br>
-      • Tab-separated, comma-separated, or space-separated all work<br>
-      • Dates: <code>2026-07-24</code>, <code>24/07/2026</code>, or <code>Fri Jul 24 2026 ...</code>
-    </div>
-
-    <button class="btn primary full" id="generateBtn">⚡ GENERATE_BUTTONS</button>
-
-    <div id="urlInfo" class="hint" style="margin-top:12px;text-align:center"></div>
-  </section>
-
-  <!-- ══════════ RIGHT: OUTPUT ══════════ -->
-  <section class="card">
-    <h2>SUBMIT_ONE_BY_ONE<span class="blink"></span></h2>
-
-    <div class="stats">
-      <div class="stat"><div class="n" id="statTotal">0</div><div class="l">TOTAL</div></div>
-      <div class="stat ok"><div class="n" id="statOpened">0</div><div class="l">DONE</div></div>
-      <div class="stat"><div class="n" id="statLeft">0</div><div class="l">LEFT</div></div>
-    </div>
-
-    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-
-    <div class="row" style="margin-bottom:14px">
-      <button class="btn primary small" id="openNextBtn">▶ SUBMIT_NEXT</button>
-      <button class="btn ghost small" id="copyAllBtn">⧉ COPY_ALL</button>
-      <button class="btn ghost small" id="resetBtn">↺ RESET</button>
-    </div>
-
-    <div id="urlArea"></div>
-
-    <details style="margin-top:16px">
-      <summary style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);user-select:none">
-        ▸ active entry IDs (auto-detected from your form)
-      </summary>
-      <div class="entry-ids" style="margin-top:10px">
-        <div><b>Tutor</b><span>entry.301464598</span></div>
-        <div><b>Year</b><span>entry.1016980109_year</span></div>
-        <div><b>Month</b><span>entry.1016980109_month</span></div>
-        <div><b>Day</b><span>entry.1016980109_day</span></div>
-        <div><b>Slot</b><span>entry.704430059</span></div>
-        <div><b>Code</b><span>entry.256369685</span></div>
-        <div><b>Batch</b><span>entry.2048472714</span></div>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div class="brand-name">Agent <span class="accent">Sudo</span></div>
       </div>
-    </details>
-  </section>
 
-</main>
+      <nav class="nav">
+        <button class="nav-link active" data-view="tracker">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span>Tracker</span>
+        </button>
+        <button class="nav-link" data-view="history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>History</span>
+        </button>
+        <button class="nav-link" data-view="insights">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+          <span>Insights</span>
+        </button>
+      </nav>
 
-<footer class="footer">
-  AGENT_SUDO © <span id="year"></span> · Dev <span class="dev">Bilal</span> · Tutor <span class="dev">7306227436</span>
-</footer>
+      <div class="header-actions">
+        <button class="icon-btn" id="paletteBtn" title="Command palette (Ctrl+K)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+        <div class="user-menu">
+          <div class="user-avatar">B</div>
+          <span class="user-name">Bilal</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<div class="toast-wrap" id="toastWrap"></div>
+  <main class="page">
+
+    <section class="view active" id="view-tracker">
+      <div class="hero">
+        <h1 class="hero-title">Generate pre-filled form submissions.</h1>
+        <p class="hero-sub">Paste your session data, set the tutor number and chapter code — then submit each entry with everything already filled in.</p>
+      </div>
+
+      <div class="grid">
+
+        <section class="card" style="animation-delay:.05s">
+          <div class="card-head">
+            <div class="card-title"><span class="card-title-mark"></span>Configuration</div>
+          </div>
+          <div class="card-body">
+            <div class="form-field">
+              <label class="form-label" for="fTutor">Tutor register number <span class="req">*</span></label>
+              <input id="fTutor" class="form-input" value="7306227436" placeholder="7306227436" autocomplete="off" inputmode="numeric" />
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="fCode">Chapter code <span class="req">*</span></label>
+              <input id="fCode" class="form-input" placeholder="e.g. SMSC01, EH-01, DM-02" autocomplete="off" />
+              <div class="form-hint">Any label — stock market, ethical hacking, digital marketing…</div>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="fData">Session data <span class="req">*</span></label>
+              <textarea id="fData" class="form-textarea" placeholder="2026-07-24, 12 pm to 2 pm, A
+2026-07-27, 12 pm to 2 pm, A
+2026-07-29, 12 pm to 2 pm, A"></textarea>
+            </div>
+            <div class="form-info">
+              <div class="form-info-title">Accepted formats</div>
+              <ul>
+                <li><code>date, slot, batch</code></li>
+                <li><code>date, tutor, name, district, topic, slot, batch</code></li>
+                <li><code>date</code> only — defaults to <code>12 pm to 2 pm</code> · <code>A</code></li>
+                <li>Separators: comma · tab · pipe · two spaces</li>
+                <li>Dates: <code>2026-07-24</code> · <code>24/07/2026</code> · <code>Fri Jul 24 2026…</code></li>
+              </ul>
+            </div>
+            <button class="btn btn-primary btn-lg btn-block" id="generateBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Generate submissions
+            </button>
+          </div>
+        </section>
+
+        <section class="card" style="animation-delay:.1s">
+          <div class="card-head">
+            <div class="card-title"><span class="card-title-mark"></span>Submission queue</div>
+            <span class="user-name" id="queueCount" style="font-family:var(--mono);font-size:11px;color:var(--text-3)">0 pending</span>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total</div></div>
+            <div class="stat"><div class="stat-value accent" id="statOpened">0</div><div class="stat-label">Submitted</div></div>
+            <div class="stat"><div class="stat-value" id="statLeft">0</div><div class="stat-label">Remaining</div></div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+          </div>
+
+          <div class="queue-bar">
+            <button class="btn btn-primary btn-sm" id="openNextBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Submit next
+            </button>
+            <button class="btn btn-secondary btn-sm" id="copyAllBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+              </svg>
+              Copy all
+            </button>
+            <button class="btn btn-ghost btn-sm" id="resetBtn" style="margin-left:auto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+              </svg>
+              Reset
+            </button>
+          </div>
+
+          <div style="padding:12px 20px 0;display:flex">
+            <div class="queue-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="text" id="queueSearch" placeholder="Filter by date, slot, batch…" />
+            </div>
+          </div>
+
+          <div class="queue-list" id="urlArea"></div>
+
+          <details class="disclosure">
+            <summary>Form entry identifiers</summary>
+            <div class="id-grid">
+              <div class="id-cell"><div class="k">Tutor</div><div class="v">entry.301464598</div></div>
+              <div class="id-cell"><div class="k">Year</div><div class="v">entry.1016980109_year</div></div>
+              <div class="id-cell"><div class="k">Month</div><div class="v">entry.1016980109_month</div></div>
+              <div class="id-cell"><div class="k">Day</div><div class="v">entry.1016980109_day</div></div>
+              <div class="id-cell"><div class="k">Slot</div><div class="v">entry.704430059</div></div>
+              <div class="id-cell"><div class="k">Code</div><div class="v">entry.256369685</div></div>
+              <div class="id-cell"><div class="k">Batch</div><div class="v">entry.2048472714</div></div>
+              <div class="id-cell"><div class="k">Status</div><div class="v ok">Connected</div></div>
+            </div>
+          </details>
+
+        </section>
+
+      </div>
+    </section>
+
+    <section class="view" id="view-history">
+      <div class="hero">
+        <h1 class="hero-title">Session history</h1>
+        <p class="hero-sub">Every batch you generate is saved here. Restore any session to continue where you left off.</p>
+      </div>
+
+      <section class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="card-title-mark"></span>Saved sessions</div>
+          <button class="btn btn-ghost btn-sm" id="clearHistoryBtn">Clear all</button>
+        </div>
+        <div id="historyList"></div>
+      </section>
+    </section>
+
+    <section class="view" id="view-insights">
+      <div class="hero">
+        <h1 class="hero-title">Insights</h1>
+        <p class="hero-sub">A quick overview of your teaching activity.</p>
+      </div>
+
+      <section class="card">
+        <div class="insights-grid" id="insightsGrid"></div>
+        <div class="card-head" style="border-top:1px solid var(--border);border-bottom:0">
+          <div class="card-title"><span class="card-title-mark"></span>Last 7 days</div>
+        </div>
+        <div class="bar-chart" id="barChart"></div>
+        <div style="height:30px"></div>
+      </section>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span>© <span id="year"></span> Agent Sudo</span>
+        <span class="dot"></span>
+        <span>Built for education</span>
+      </div>
+      <div class="footer-left">
+        <a class="footer-link" href="https://instagram.com/bilxnvyy" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+          @bilxnvyy
+        </a>
+        <span class="dot"></span>
+        <span style="font-family:var(--mono);color:var(--text-3);font-size:11.5px">Ctrl+K</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div class="palette" id="palette">
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" id="paletteSearch" placeholder="Type a command or search…" autocomplete="off" />
+    </div>
+    <div class="palette-list" id="paletteList"></div>
+    <div class="palette-foot">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> select</span>
+      <span><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   AGENT_SUDO // AUTO_FILL
-   Slot & batch parsed from pasted data — no dropdowns
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   Agent Sudo · Teaching Tracker
+   ═══════════════════════════════════════════════ */
 
-/* ── MATRIX RAIN ── */
-(function(){
-  const cvs=document.getElementById('matrix'),ctx=cvs.getContext('2d');
-  let W,H,cols,drops;
-  const chars='アカサタナハマヤラワｱｲｳｴｵ0123456789ABCDEFabcdef<>[]{}#$%&*/\\|=+';
-  const fs=14;
-  function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;cols=Math.floor(W/fs);drops=Array(cols).fill(1);}
-  function draw(){
-    ctx.fillStyle='rgba(2,4,10,0.08)';ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#00ffa3';ctx.font=fs+'px JetBrains Mono, monospace';
-    for(let i=0;i<cols;i++){
-      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
-      if(drops[i]*fs>H&&Math.random()>0.975)drops[i]=0;
-      drops[i]++;
-    }
-  }
-  resize();addEventListener('resize',resize);setInterval(draw,55);
-})();
-
-/* ── ENTRY IDS ── */
-const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
-const ID={
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
+const ENTRY = {
   tutor:'entry.301464598',
   year:'entry.1016980109_year',
   month:'entry.1016980109_month',
@@ -297,227 +580,468 @@ const ID={
   batch:'entry.2048472714'
 };
 
-const $=(s,r=document)=>r.querySelector(s);
-const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const K = {
+  queue:'agentsudo.queue',
+  history:'agentsudo.history',
+  view:'agentsudo.view'
+};
 
-function toast(msg,type=''){
-  const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;
-  $('#toastWrap').appendChild(el);
-  setTimeout(()=>{el.style.opacity=0;el.style.transform='translateX(30px)';},2400);
-  setTimeout(()=>el.remove(),2900);
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d }catch{ return d } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch{} }
+};
+
+function toast(msg, type = ''){
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<span class="toast-msg">${esc(msg)}</span>`;
+  $('#toasts').appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'all .3s cubic-bezier(.4,0,.2,1)';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(6px) scale(.98)';
+  }, 2400);
+  setTimeout(() => el.remove(), 2800);
 }
 
-/* ── DATE PARSER ── */
+/* ── Data ── */
+let queue = ls.get(K.queue, []);
+let history = ls.get(K.history, []);
+let filterText = '';
+
+/* ── Date parsing ── */
 function parseDate(str){
-  if(!str)return null;
-  str=String(str).trim();
-  // ISO: 2026-07-24
-  let m=str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if(m)return {y:+m[1],m:+m[2],d:+m[3]};
-  // Long: Fri Jul 24 2026 00:00:00 GMT+0530
-  m=str.match(/([A-Za-z]{3,})\s+(\d{1,2})\s+(\d{4})/);
+  if(!str) return null;
+  str = String(str).trim();
+  let m = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return { y:+m[1], m:+m[2], d:+m[3] };
+  m = str.match(/([A-Za-z]{3,})\s+(\d{1,2})\s+(\d{4})/);
   if(m){
-    const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-    const mm=months[m[1].slice(0,3).toLowerCase()];
-    if(mm)return {y:+m[3],m:mm,d:+m[2]};
+    const months = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+    const mm = months[m[1].slice(0,3).toLowerCase()];
+    if(mm) return { y:+m[3], m:mm, d:+m[2] };
   }
-  // dd/mm/yyyy or dd-mm-yyyy
-  m=str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-  if(m)return {y:+m[3],m:+m[2],d:+m[1]};
+  m = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m) return { y:+m[3], m:+m[2], d:+m[1] };
   return null;
 }
-function isoDate(p){return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;}
-
-/* ── SLOT DETECTOR ── */
-function looksLikeSlot(s){
-  if(!s)return false;
-  const t=String(s).trim();
-  if(/^\d{1,2}\s*(am|pm)\s*to\s*\d{1,2}\s*(am|pm)$/i.test(t))return true;
-  if(/^\d{1,2}[:.]\d{2}\s*(am|pm)?\s*(to|-)\s*\d{1,2}[:.]\d{2}\s*(am|pm)?$/i.test(t))return true;
-  if(/saturday/i.test(t))return true;
+function isoDate(p){ return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`; }
+function isSlot(s){
+  if(!s) return false;
+  const t = String(s).trim();
+  if(/^\d{1,2}\s*(am|pm)\s*to\s*\d{1,2}\s*(am|pm)$/i.test(t)) return true;
+  if(/^\d{1,2}[:.]\d{2}\s*(am|pm)?\s*(to|-)\s*\d{1,2}[:.]\d{2}\s*(am|pm)?$/i.test(t)) return true;
+  if(/saturday/i.test(t)) return true;
   return false;
 }
+function isBatch(s){ return /^[A-F]$/i.test(String(s).trim()); }
 
-/* ── BATCH DETECTOR ── */
-function looksLikeBatch(s){
-  if(!s)return false;
-  return /^[A-F]$/i.test(String(s).trim());
-}
-
-/* ── BUILD URL ── */
-function buildUrl({tutor,date,slot,code,batch}){
-  const p=parseDate(date);
-  if(!p)return '';
-  const params=new URLSearchParams();
-  params.set(ID.tutor,tutor);
-  params.set(ID.year,p.y);
-  params.set(ID.month,p.m);
-  params.set(ID.day,p.d);
-  params.set(ID.slot,slot);
-  params.set(ID.code,code);
-  params.set(ID.batch,batch);
+function buildUrl({ tutor, date, slot, code, batch }){
+  const p = parseDate(date);
+  if(!p) return '';
+  const params = new URLSearchParams();
+  params.set(ENTRY.tutor, tutor);
+  params.set(ENTRY.year,  p.y);
+  params.set(ENTRY.month, p.m);
+  params.set(ENTRY.day,   p.d);
+  params.set(ENTRY.slot,  slot);
+  params.set(ENTRY.code,  code);
+  params.set(ENTRY.batch, batch);
   return `${FORM_URL}?${params.toString()}`;
 }
 
-/* ── PARSE INPUT — extracts date, slot, batch per line ── */
 function parseInput(text){
-  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-  const out=[];
-  const seen=new Set();
-
-  lines.forEach(line=>{
-    // Split by tab first, then comma, then pipe
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const out = []; const seen = new Set();
+  for(const line of lines){
     let parts;
-    if(line.includes('\t')) parts=line.split('\t');
-    else if(line.includes(',')) parts=line.split(',');
-    else if(line.includes('|')) parts=line.split('|');
-    else parts=line.split(/\s{2,}/);   // fallback: 2+ spaces
+    if(line.includes('\t'))      parts = line.split('\t');
+    else if(line.includes(','))  parts = line.split(',');
+    else if(line.includes('|'))  parts = line.split('|');
+    else                         parts = line.split(/\s{2,}/);
+    parts = parts.map(p => p.trim()).filter(Boolean);
 
-    parts=parts.map(p=>p.trim()).filter(Boolean);
-
-    let dateStr=null,slot=null,batch=null;
-
+    let dateStr = null, slot = null, batch = null;
     for(const p of parts){
-      if(!dateStr){
-        const d=parseDate(p);
-        if(d){dateStr=isoDate(d);continue;}
-      }
-      if(!slot && looksLikeSlot(p)){slot=p;continue;}
-      if(!batch && looksLikeBatch(p)){batch=p.toUpperCase();continue;}
+      if(!dateStr){ const d = parseDate(p); if(d){ dateStr = isoDate(d); continue; } }
+      if(!slot && isSlot(p)){ slot = p; continue; }
+      if(!batch && isBatch(p)){ batch = p.toUpperCase(); continue; }
     }
-
-    if(!dateStr)return;
-
-    // Defaults if not found
-    slot=slot||'12 pm to 2 pm';
-    batch=batch||'A';
-
-    const key=dateStr+'|'+slot+'|'+batch;
-    if(seen.has(key))return;
+    if(!dateStr) continue;
+    slot  = slot  || '12 pm to 2 pm';
+    batch = batch || 'A';
+    const key = `${dateStr}|${slot}|${batch}`;
+    if(seen.has(key)) continue;
     seen.add(key);
-
-    out.push({date:dateStr,slot,batch});
-  });
-
+    out.push({ date: dateStr, slot, batch });
+  }
   return out;
 }
 
-let generated=[];
-
-/* ── RENDER ── */
+/* ═══════════ RENDER ═══════════ */
 function render(){
-  const area=$('#urlArea');
-  if(!generated.length){
-    area.innerHTML=`<div class="empty">
-      <div class="ei">📭</div>
-      <h3>// no_buttons_yet</h3>
-      <p>Paste data on the left and click GENERATE_BUTTONS</p>
-    </div>`;
+  const area = $('#urlArea');
+  const countEl = $('#queueCount');
+
+  let visible = queue;
+  if(filterText){
+    const f = filterText.toLowerCase();
+    visible = queue.filter(u =>
+      u.date.toLowerCase().includes(f) ||
+      u.slot.toLowerCase().includes(f) ||
+      u.batch.toLowerCase().includes(f) ||
+      u.code.toLowerCase().includes(f)
+    );
+  }
+
+  if(!queue.length){
+    area.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="empty-title">No submissions yet</div>
+        <div class="empty-sub">Fill in the configuration and generate submissions to begin.</div>
+      </div>`;
+    countEl.textContent = '0 pending';
     updateStats();
     return;
   }
 
-  area.innerHTML=`<div class="url-list">${generated.map((u,i)=>`
-    <div class="url-item ${u.opened?'opened':''}" data-idx="${i}">
-      <div class="url-head">
-        <span class="url-num-badge">#${i+1}</span>
-        <span class="url-date">${esc(u.date)}</span>
-        <span class="url-meta">${esc(u.slot)}</span>
-        <span class="url-meta">batch ${esc(u.batch)}</span>
-        <span class="url-meta" style="color:var(--accent)">${esc(u.code)}</span>
-        ${u.opened?'<span class="url-check">✓ DONE</span>':''}
-      </div>
-      <div class="url-actions">
-        <a class="submit-big" href="${esc(u.url)}" target="_blank" rel="noopener" data-open="${i}">
-          ${u.opened?'✓ OPEN_AGAIN':'⚡ SUBMIT #'+(i+1)}
-        </a>
-        <button class="btn ghost small" data-copy="${esc(u.url)}">⧉ URL</button>
-        <button class="btn ghost small" data-copydate="${esc(u.date)}">⧉ DATE</button>
-      </div>
-    </div>
-  `).join('')}</div>`;
+  if(!visible.length){
+    area.innerHTML = `<div class="empty"><div class="empty-title">No matches</div><div class="empty-sub">Try a different filter.</div></div>`;
+    updateStats();
+    return;
+  }
 
-  $$('#urlArea [data-open]').forEach(a=>a.addEventListener('click',()=>{
-    const i=+a.dataset.open;
-    if(generated[i]){generated[i].opened=true;setTimeout(render,250);}
+  area.innerHTML = visible.map(u => {
+    const idx = queue.indexOf(u);
+    return `
+    <div class="item ${u.opened ? 'done' : ''}" data-idx="${idx}">
+      <div class="item-num">${String(idx + 1).padStart(2, '0')}</div>
+      <div class="item-body">
+        <div class="item-date">
+          ${esc(u.date)}
+          ${u.opened ? '<span class="sent">Submitted</span>' : ''}
+        </div>
+        <div class="item-meta">
+          <span class="item-tag">${esc(u.slot)}</span>
+          <span class="item-tag">Batch ${esc(u.batch)}</span>
+          <span class="item-tag code">${esc(u.code)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="icon-btn" data-copy="${esc(u.url)}" title="Copy URL">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+          </svg>
+        </button>
+        <a class="submit-btn" href="${esc(u.url)}" target="_blank" rel="noopener" data-open="${idx}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7M7 7h10v10"/>
+          </svg>
+          ${u.opened ? 'Re-open' : 'Submit'}
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+
+  countEl.textContent = `${queue.filter(u => !u.opened).length} pending`;
+
+  $$('[data-open]').forEach(a => a.addEventListener('click', () => {
+    const i = +a.dataset.open;
+    if(queue[i]){
+      queue[i].opened = true;
+      ls.set(K.queue, queue);
+      setTimeout(render, 150);
+    }
   }));
-  $$('#urlArea [data-copy]').forEach(b=>b.addEventListener('click',async()=>{
-    try{await navigator.clipboard.writeText(b.dataset.copy);toast('URL copied ✓','ok');}
-    catch{toast('Copy failed','error');}
-  }));
-  $$('#urlArea [data-copydate]').forEach(b=>b.addEventListener('click',async()=>{
-    try{await navigator.clipboard.writeText(b.dataset.copydate);toast('Date copied','ok');}
-    catch{toast('Copy failed','error');}
+
+  $$('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try{ await navigator.clipboard.writeText(b.dataset.copy); toast('URL copied'); }
+    catch{ toast('Failed to copy', 'error'); }
   }));
 
   updateStats();
 }
 
 function updateStats(){
-  const t=generated.length;
-  const o=generated.filter(u=>u.opened).length;
-  $('#statTotal').textContent=t;
-  $('#statOpened').textContent=o;
-  $('#statLeft').textContent=t-o;
-  const pct=t?Math.round((o/t)*100):0;
-  $('#progressBar').style.width=pct+'%';
+  const t = queue.length;
+  const o = queue.filter(u => u.opened).length;
+  $('#statTotal').textContent  = t;
+  $('#statOpened').textContent = o;
+  $('#statLeft').textContent   = t - o;
+  const pct = t ? Math.round((o / t) * 100) : 0;
+  $('#progressBar').style.width = pct + '%';
 }
 
-/* ── GENERATE ── */
-$('#generateBtn').addEventListener('click',()=>{
-  const tutor=$('#fTutor').value.trim();
-  const code=$('#fCode').value.trim();
-  const raw=$('#fData').value;
+/* ═══════════ ACTIONS ═══════════ */
+function generate(){
+  const tutor = $('#fTutor').value.trim();
+  const code  = $('#fCode').value.trim();
+  const raw   = $('#fData').value;
 
-  if(!tutor)return toast('Tutor number required','error');
-  if(!code)return toast('Chapter code required','error');
-  if(!raw.trim())return toast('Paste at least one line of data','warn');
+  if(!tutor){ toast('Tutor number is required', 'error'); return; }
+  if(!code){ toast('Chapter code is required', 'error'); return; }
+  if(!raw.trim()){ toast('Paste some session data first', 'warn'); return; }
 
-  const rows=parseInput(raw);
-  if(!rows.length)return toast('No valid dates found — check format','error');
+  const rows = parseInput(raw);
+  if(!rows.length){ toast('No valid dates found', 'error'); return; }
 
-  generated=rows.map(r=>({
-    date:r.date,slot:r.slot,batch:r.batch,code,tutor,
-    url:buildUrl({tutor,date:r.date,slot:r.slot,code,batch:r.batch}),
-    opened:false
+  queue = rows.map(r => ({
+    date: r.date, slot: r.slot, batch: r.batch,
+    code, tutor,
+    url: buildUrl({ tutor, date: r.date, slot: r.slot, code, batch: r.batch }),
+    opened: false
   }));
 
-  render();
-  $('#urlInfo').innerHTML=`✓ Generated <b style="color:var(--accent)">${generated.length}</b> submit buttons`;
-  toast(`Generated ${generated.length} buttons ✓`,'ok');
+  ls.set(K.queue, queue);
+
+  history.unshift({
+    id: 'session-' + Date.now(),
+    at: Date.now(),
+    tutor, code,
+    count: queue.length,
+    dates: rows.map(r => r.date)
+  });
+  if(history.length > 30) history = history.slice(0, 30);
+  ls.set(K.history, history);
+
+  render(); renderHistory(); renderInsights();
+  toast(`${queue.length} submission${queue.length === 1 ? '' : 's'} generated`);
+}
+
+function submitNext(){
+  const next = queue.find(u => !u.opened);
+  if(!next){ toast('All submissions complete', 'warn'); return; }
+  window.open(next.url, '_blank');
+  next.opened = true;
+  ls.set(K.queue, queue);
+  setTimeout(render, 150);
+  const left = queue.filter(u => !u.opened).length;
+  toast(`${next.date} — ${left} remaining`);
+}
+
+async function copyAll(){
+  if(!queue.length){ toast('Generate submissions first', 'warn'); return; }
+  const text = queue.map((u, i) =>
+    `${i + 1}\t${u.date}\t${u.slot}\t${u.batch}\t${u.code}\t${u.tutor}\t${u.url}`
+  ).join('\n');
+  try{ await navigator.clipboard.writeText(text); toast('All URLs copied'); }
+  catch{ toast('Failed to copy', 'error'); }
+}
+
+function resetQueue(){
+  if(!queue.length) return;
+  if(!confirm('Reset all submission marks?')) return;
+  queue.forEach(u => u.opened = false);
+  ls.set(K.queue, queue);
+  render(); toast('Queue reset');
+}
+
+/* ═══════════ VIEWS ═══════════ */
+function switchView(name){
+  $$('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.view === name));
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  ls.set(K.view, name);
+  if(name === 'history') renderHistory();
+  if(name === 'insights') renderInsights();
+}
+$$('.nav-link').forEach(l => l.addEventListener('click', () => switchView(l.dataset.view)));
+
+/* ═══════════ HISTORY ═══════════ */
+function renderHistory(){
+  const el = $('#historyList');
+  if(!history.length){
+    el.innerHTML = `<div class="empty"><div class="empty-title">No saved sessions</div><div class="empty-sub">Generated submissions will appear here.</div></div>`;
+    return;
+  }
+  el.innerHTML = history.map(h => `
+    <div class="list-row">
+      <div class="item-num">${new Date(h.at).getDate().toString().padStart(2, '0')}</div>
+      <div class="list-row-main">
+        <div class="list-row-title">${esc(h.code)} · ${h.count} entries</div>
+        <div class="list-row-sub">
+          ${esc(h.tutor)} · ${new Date(h.at).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm" data-restore="${h.id}">Restore</button>
+    </div>
+  `).join('');
+
+  $$('[data-restore]').forEach(b => b.addEventListener('click', () => {
+    const h = history.find(x => x.id === b.dataset.restore);
+    if(!h) return;
+    $('#fTutor').value = h.tutor;
+    $('#fCode').value = h.code;
+    $('#fData').value = h.dates.join('\n');
+    switchView('tracker');
+    toast('Session restored');
+  }));
+}
+
+$('#clearHistoryBtn').addEventListener('click', () => {
+  if(!history.length) return;
+  if(!confirm('Clear all saved sessions?')) return;
+  history = []; ls.set(K.history, history);
+  renderHistory(); renderInsights(); toast('History cleared');
 });
 
-/* ── SUBMIT NEXT (one tab at a time) ── */
-$('#openNextBtn').addEventListener('click',()=>{
-  const next=generated.find(u=>!u.opened);
-  if(!next)return toast('All entries submitted ✓','ok');
-  window.open(next.url,'_blank');
-  next.opened=true;
-  setTimeout(render,250);
-  const left=generated.filter(u=>!u.opened).length;
-  toast(`Opened ${next.date} — ${left} left`,'ok');
+/* ═══════════ INSIGHTS ═══════════ */
+function renderInsights(){
+  const grid = $('#insightsGrid');
+  const totalSubs = history.reduce((n, h) => n + h.count, 0);
+  const codeCounts = {};
+  history.forEach(h => codeCounts[h.code] = (codeCounts[h.code] || 0) + 1);
+  const topCode = Object.entries(codeCounts).sort((a, b) => b[1] - a[1])[0] || ['—', 0];
+
+  grid.innerHTML = `
+    <div class="insight-card">
+      <div class="insight-label">Total sessions</div>
+      <div class="insight-value">${history.length}</div>
+      <div class="insight-sub">Generated batches</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">Total submissions</div>
+      <div class="insight-value">${totalSubs}</div>
+      <div class="insight-sub">Across all batches</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">Top chapter</div>
+      <div class="insight-value" style="font-size:18px">${esc(topCode[0])}</div>
+      <div class="insight-sub">${topCode[1]} session${topCode[1] === 1 ? '' : 's'}</div>
+    </div>
+  `;
+
+  const days = [];
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0,0,0,0);
+    const next = new Date(d); next.setDate(next.getDate() + 1);
+    const count = history.filter(h => h.at >= d.getTime() && h.at < next.getTime())
+                         .reduce((n, h) => n + h.count, 0);
+    days.push({ label: d.toLocaleDateString('en-IN', { weekday: 'short' }), count });
+  }
+  const max = Math.max(1, ...days.map(d => d.count));
+  $('#barChart').innerHTML = days.map(d => {
+    const pct = (d.count / max) * 100;
+    return `<div class="bar ${d.count ? 'active' : ''}" style="height:${Math.max(4, pct)}%">
+      <div class="bar-label">${d.label}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════ COMMAND PALETTE ═══════════ */
+const palette = $('#palette');
+const paletteSearch = $('#paletteSearch');
+const paletteList = $('#paletteList');
+let paletteIndex = 0;
+
+const COMMANDS = [
+  { id:'gen',   icon:'⚡', title:'Generate submissions', desc:'Parse the pasted data',       action: generate },
+  { id:'next',  icon:'▶', title:'Submit next entry',      desc:'Open the next pending form',  action: submitNext },
+  { id:'copy',  icon:'⧉', title:'Copy all URLs',          desc:'Copy every generated URL',    action: copyAll },
+  { id:'reset', icon:'↺', title:'Reset queue',            desc:'Clear submission marks',      action: resetQueue },
+  { id:'track', icon:'▸', title:'Go to Tracker',          desc:'Main submission view',        action: () => switchView('tracker') },
+  { id:'hist',  icon:'▸', title:'Go to History',          desc:'View past sessions',          action: () => switchView('history') },
+  { id:'ins',   icon:'▸', title:'Go to Insights',         desc:'View activity dashboard',     action: () => switchView('insights') },
+  { id:'form',  icon:'↗', title:'Open Google Form',       desc:'Open the form in a new tab',  action: () => window.open(FORM_URL, '_blank') },
+];
+
+function openPalette(){
+  palette.classList.add('open');
+  paletteSearch.value = ''; paletteSearch.focus();
+  paletteIndex = 0; renderPalette();
+}
+function closePalette(){ palette.classList.remove('open'); }
+
+function renderPalette(){
+  const q = paletteSearch.value.toLowerCase().trim();
+  const list = COMMANDS.filter(c =>
+    !q || c.title.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q)
+  );
+  if(!list.length){
+    paletteList.innerHTML = `<div class="palette-empty">No commands match.</div>`;
+    return;
+  }
+  if(paletteIndex >= list.length) paletteIndex = 0;
+  paletteList.innerHTML = list.map((c, i) => `
+    <div class="palette-item ${i === paletteIndex ? 'selected' : ''}" data-cmd="${c.id}" data-i="${i}">
+      <div class="palette-item-icon">${c.icon}</div>
+      <div class="palette-item-body">
+        <div class="palette-item-title">${esc(c.title)}</div>
+        <div class="palette-item-desc">${esc(c.desc)}</div>
+      </div>
+    </div>
+  `).join('');
+  $$('.palette-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      paletteIndex = +el.dataset.i;
+      $$('.palette-item').forEach(x => x.classList.toggle('selected', x === el));
+    });
+    el.addEventListener('click', () => runCommand(el.dataset.cmd));
+  });
+  palette._list = list;
+}
+
+function runCommand(id){
+  const c = COMMANDS.find(x => x.id === id);
+  if(!c) return;
+  closePalette();
+  setTimeout(c.action, 80);
+}
+
+paletteSearch.addEventListener('input', () => { paletteIndex = 0; renderPalette(); });
+paletteSearch.addEventListener('keydown', e => {
+  const list = palette._list || [];
+  if(e.key === 'ArrowDown'){ e.preventDefault(); paletteIndex = (paletteIndex + 1) % list.length; renderPalette(); }
+  if(e.key === 'ArrowUp'){ e.preventDefault(); paletteIndex = (paletteIndex - 1 + list.length) % list.length; renderPalette(); }
+  if(e.key === 'Enter' && list[paletteIndex]){ runCommand(list[paletteIndex].id); }
+});
+palette.addEventListener('click', e => { if(e.target === palette) closePalette(); });
+$('#paletteBtn').addEventListener('click', openPalette);
+
+/* ═══════════ WIRING ═══════════ */
+$('#generateBtn').addEventListener('click', generate);
+$('#openNextBtn').addEventListener('click', submitNext);
+$('#copyAllBtn').addEventListener('click', copyAll);
+$('#resetBtn').addEventListener('click', resetQueue);
+$('#queueSearch').addEventListener('input', e => { filterText = e.target.value; render(); });
+
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){
+    e.preventDefault();
+    palette.classList.contains('open') ? closePalette() : openPalette();
+    return;
+  }
+  if(e.key === 'Escape' && palette.classList.contains('open')){ closePalette(); return; }
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+    e.preventDefault();
+    generate();
+  }
 });
 
-/* ── COPY ALL ── */
-$('#copyAllBtn').addEventListener('click',async()=>{
-  if(!generated.length)return toast('Generate buttons first','warn');
-  const text=generated.map((u,i)=>`#${i+1}\t${u.date}\t${u.slot}\t${u.batch}\t${u.code}\t${u.tutor}\t${u.url}`).join('\n');
-  try{await navigator.clipboard.writeText(text);toast('All copied ✓','ok');}
-  catch{toast('Copy failed','error');}
-});
+/* ═══════════ BOOT ═══════════ */
+(function boot(){
+  $('#year').textContent = new Date().getFullYear();
 
-/* ── RESET ── */
-$('#resetBtn').addEventListener('click',()=>{
-  if(!confirm('Reset all opened marks?'))return;
-  generated.forEach(u=>u.opened=false);
-  render();
-  toast('Reset ✓','ok');
-});
+  // Fade in app
+  requestAnimationFrame(() => {
+    $('#app').classList.add('visible');
+  });
 
-/* ── INIT ── */
-$('#year').textContent=new Date().getFullYear();
-render();
+  // Restore view
+  switchView(ls.get(K.view, 'tracker'));
+
+  // First render
+  render(); renderHistory(); renderInsights();
+})();
 </script>
 </body>
 </html>
