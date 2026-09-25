@@ -77,14 +77,12 @@ a{color:var(--accent2);text-decoration:none}
 .field>span{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
   font-family:var(--mono);display:flex;align-items:center;gap:6px}
 .field>span::before{content:'>';color:var(--accent);font-weight:700}
-.field input,.field textarea,.field select{background:var(--bg2);border:1px solid var(--border);border-radius:9px;
+.field input,.field textarea{background:var(--bg2);border:1px solid var(--border);border-radius:9px;
   padding:11px 13px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:all .16s;width:100%}
-.field textarea{resize:vertical;min-height:180px;white-space:pre;line-height:1.65}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);
+.field textarea{resize:vertical;min-height:240px;white-space:pre;line-height:1.65}
+.field input:focus,.field textarea:focus{border-color:var(--accent);
   box-shadow:0 0 0 3px rgba(0,255,163,.12),0 0 18px -4px rgba(0,255,163,.4)}
 .field input::placeholder,.field textarea::placeholder{color:var(--dim)}
-.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%2300ffa3' stroke-width='1.5' fill='none'/></svg>");
-  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row .spacer{flex:1}
@@ -92,7 +90,6 @@ a{color:var(--accent2);text-decoration:none}
 .hint code{background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--accent);border:1px solid var(--border)}
 .hint b{color:var(--muted)}
 
-/* URL LIST */
 .url-list{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow-y:auto;padding-right:5px}
 .url-item{background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
   border:1px solid var(--border);border-radius:11px;padding:14px;transition:all .2s;position:relative;
@@ -111,8 +108,7 @@ a{color:var(--accent2);text-decoration:none}
 .url-date{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);letter-spacing:.5px}
 .url-meta{font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:5px;
   background:var(--bg2);border:1px solid var(--border);color:var(--muted)}
-.url-check{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ok);
-  text-shadow:0 0 8px var(--ok)}
+.url-check{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ok);text-shadow:0 0 8px var(--ok)}
 .url-actions{display:flex;gap:6px;flex-wrap:wrap}
 .submit-big{flex:1;min-width:130px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;
   font-weight:800;font-size:12px;padding:9px 16px;border-radius:8px;border:0;cursor:pointer;
@@ -194,42 +190,25 @@ a{color:var(--accent2);text-decoration:none}
       <input id="fCode" placeholder="SMSC01 / EH-01 / DM-02 / stock market…" autocomplete="off" />
     </div>
 
-    <div class="row" style="margin-bottom:12px">
-      <div class="field" style="flex:1;margin-bottom:0">
-        <span>Slot</span>
-        <select id="fSlot">
-          <option>6 am to 8 am</option>
-          <option>8 am to 10 am</option>
-          <option>10 am to 12 pm</option>
-          <option selected>12 pm to 2 pm</option>
-          <option>8 am to 1 pm (Saturday)</option>
-          <option>10 am to 4 pm</option>
-        </select>
-      </div>
-      <div class="field" style="flex:1;margin-bottom:0">
-        <span>Sub-Batch</span>
-        <select id="fBatch">
-          <option selected>A</option><option>B</option><option>C</option>
-          <option>D</option><option>E</option><option>F</option>
-        </select>
-      </div>
-    </div>
-
     <div class="field">
-      <span>Paste Dates (one per line)</span>
-      <textarea id="fDates" placeholder="2026-07-24
-2026-07-27
-2026-07-29
-2026-07-30
-2026-08-05"></textarea>
+      <span>Paste Data (Date + Slot + Batch per line)</span>
+      <textarea id="fData" placeholder="2026-07-24, 12 pm to 2 pm, A
+2026-07-27, 12 pm to 2 pm, A
+2026-07-29, 12 pm to 2 pm, A
+
+or full format:
+
+Fri Jul 24 2026 00:00:00 GMT+0530, 7306227436, Minhaj, ernakulam, stock market, 12 pm to 2 pm, a
+Mon Jul 27 2026 00:00:00 GMT+0530, 7306227436, Minhaj, ernakulam, stock market, 12 pm to 2 pm, a"></textarea>
     </div>
 
     <div class="hint" style="margin-top:-6px;margin-bottom:12px">
       <b>Accepted formats:</b><br>
-      • <code>2026-07-24</code><br>
-      • <code>24/07/2026</code> or <code>24-07-2026</code><br>
-      • <code>Fri Jul 24 2026 00:00:00 GMT+0530</code><br>
-      • <code>2026-07-24, 12 pm to 2 pm, A</code>
+      • <code>date, slot, batch</code><br>
+      • <code>date, tutor, name, district, topic, slot, batch</code><br>
+      • <code>date</code> only (uses defaults 12 pm to 2 pm / A)<br>
+      • Tab-separated, comma-separated, or space-separated all work<br>
+      • Dates: <code>2026-07-24</code>, <code>24/07/2026</code>, or <code>Fri Jul 24 2026 ...</code>
     </div>
 
     <button class="btn primary full" id="generateBtn">⚡ GENERATE_BUTTONS</button>
@@ -283,7 +262,8 @@ a{color:var(--accent2);text-decoration:none}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   AGENT_SUDO // AUTO_FILL — one-by-one submit
+   AGENT_SUDO // AUTO_FILL
+   Slot & batch parsed from pasted data — no dropdowns
    ═══════════════════════════════════════════════════════════ */
 
 /* ── MATRIX RAIN ── */
@@ -305,7 +285,7 @@ a{color:var(--accent2);text-decoration:none}
   resize();addEventListener('resize',resize);setInterval(draw,55);
 })();
 
-/* ── ENTRY IDS (from your form URL) ── */
+/* ── ENTRY IDS ── */
 const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
 const ID={
   tutor:'entry.301464598',
@@ -332,19 +312,38 @@ function toast(msg,type=''){
 function parseDate(str){
   if(!str)return null;
   str=String(str).trim();
+  // ISO: 2026-07-24
   let m=str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
   if(m)return {y:+m[1],m:+m[2],d:+m[3]};
+  // Long: Fri Jul 24 2026 00:00:00 GMT+0530
   m=str.match(/([A-Za-z]{3,})\s+(\d{1,2})\s+(\d{4})/);
   if(m){
     const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
     const mm=months[m[1].slice(0,3).toLowerCase()];
     if(mm)return {y:+m[3],m:mm,d:+m[2]};
   }
+  // dd/mm/yyyy or dd-mm-yyyy
   m=str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if(m)return {y:+m[3],m:+m[2],d:+m[1]};
   return null;
 }
 function isoDate(p){return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;}
+
+/* ── SLOT DETECTOR ── */
+function looksLikeSlot(s){
+  if(!s)return false;
+  const t=String(s).trim();
+  if(/^\d{1,2}\s*(am|pm)\s*to\s*\d{1,2}\s*(am|pm)$/i.test(t))return true;
+  if(/^\d{1,2}[:.]\d{2}\s*(am|pm)?\s*(to|-)\s*\d{1,2}[:.]\d{2}\s*(am|pm)?$/i.test(t))return true;
+  if(/saturday/i.test(t))return true;
+  return false;
+}
+
+/* ── BATCH DETECTOR ── */
+function looksLikeBatch(s){
+  if(!s)return false;
+  return /^[A-F]$/i.test(String(s).trim());
+}
 
 /* ── BUILD URL ── */
 function buildUrl({tutor,date,slot,code,batch}){
@@ -361,28 +360,46 @@ function buildUrl({tutor,date,slot,code,batch}){
   return `${FORM_URL}?${params.toString()}`;
 }
 
-/* ── PARSE INPUT ── */
+/* ── PARSE INPUT — extracts date, slot, batch per line ── */
 function parseInput(text){
   const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   const out=[];
   const seen=new Set();
+
   lines.forEach(line=>{
-    let parts=line.includes('\t')?line.split('\t'):line.split(',');
-    parts=parts.map(p=>p.trim());
+    // Split by tab first, then comma, then pipe
+    let parts;
+    if(line.includes('\t')) parts=line.split('\t');
+    else if(line.includes(',')) parts=line.split(',');
+    else if(line.includes('|')) parts=line.split('|');
+    else parts=line.split(/\s{2,}/);   // fallback: 2+ spaces
+
+    parts=parts.map(p=>p.trim()).filter(Boolean);
+
     let dateStr=null,slot=null,batch=null;
+
     for(const p of parts){
-      const d=parseDate(p);
-      if(d&&!dateStr){dateStr=isoDate(d);continue;}
-      if(/^\d+\s*(am|pm)\s*to\s*\d+\s*(am|pm)/i.test(p)){slot=p;continue;}
-      if(/saturday/i.test(p)){slot=p;continue;}
-      if(/^[A-F]$/i.test(p)&&!batch){batch=p.toUpperCase();continue;}
+      if(!dateStr){
+        const d=parseDate(p);
+        if(d){dateStr=isoDate(d);continue;}
+      }
+      if(!slot && looksLikeSlot(p)){slot=p;continue;}
+      if(!batch && looksLikeBatch(p)){batch=p.toUpperCase();continue;}
     }
+
     if(!dateStr)return;
-    const key=dateStr+'|'+(slot||'')+'|'+(batch||'');
+
+    // Defaults if not found
+    slot=slot||'12 pm to 2 pm';
+    batch=batch||'A';
+
+    const key=dateStr+'|'+slot+'|'+batch;
     if(seen.has(key))return;
     seen.add(key);
-    out.push({date:dateStr,slot:slot||null,batch:batch||null});
+
+    out.push({date:dateStr,slot,batch});
   });
+
   return out;
 }
 
@@ -395,7 +412,7 @@ function render(){
     area.innerHTML=`<div class="empty">
       <div class="ei">📭</div>
       <h3>// no_buttons_yet</h3>
-      <p>Fill config on the left and click GENERATE_BUTTONS</p>
+      <p>Paste data on the left and click GENERATE_BUTTONS</p>
     </div>`;
     updateStats();
     return;
@@ -421,15 +438,10 @@ function render(){
     </div>
   `).join('')}</div>`;
 
-  // Mark opened when clicked
   $$('#urlArea [data-open]').forEach(a=>a.addEventListener('click',()=>{
     const i=+a.dataset.open;
-    if(generated[i]){
-      generated[i].opened=true;
-      setTimeout(render,250);
-    }
+    if(generated[i]){generated[i].opened=true;setTimeout(render,250);}
   }));
-
   $$('#urlArea [data-copy]').forEach(b=>b.addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText(b.dataset.copy);toast('URL copied ✓','ok');}
     catch{toast('Copy failed','error');}
@@ -456,33 +468,27 @@ function updateStats(){
 $('#generateBtn').addEventListener('click',()=>{
   const tutor=$('#fTutor').value.trim();
   const code=$('#fCode').value.trim();
-  const defSlot=$('#fSlot').value;
-  const defBatch=$('#fBatch').value;
-  const raw=$('#fDates').value;
+  const raw=$('#fData').value;
 
   if(!tutor)return toast('Tutor number required','error');
   if(!code)return toast('Chapter code required','error');
-  if(!raw.trim())return toast('Paste at least one date','warn');
+  if(!raw.trim())return toast('Paste at least one line of data','warn');
 
   const rows=parseInput(raw);
-  if(!rows.length)return toast('No valid dates found','error');
+  if(!rows.length)return toast('No valid dates found — check format','error');
 
-  generated=rows.map(r=>{
-    const slot=r.slot||defSlot;
-    const batch=r.batch||defBatch;
-    return {
-      date:r.date,slot,batch,code,tutor,
-      url:buildUrl({tutor,date:r.date,slot,code,batch}),
-      opened:false
-    };
-  });
+  generated=rows.map(r=>({
+    date:r.date,slot:r.slot,batch:r.batch,code,tutor,
+    url:buildUrl({tutor,date:r.date,slot:r.slot,code,batch:r.batch}),
+    opened:false
+  }));
 
   render();
   $('#urlInfo').innerHTML=`✓ Generated <b style="color:var(--accent)">${generated.length}</b> submit buttons`;
   toast(`Generated ${generated.length} buttons ✓`,'ok');
 });
 
-/* ── SUBMIT NEXT (opens only ONE tab) ── */
+/* ── SUBMIT NEXT (one tab at a time) ── */
 $('#openNextBtn').addEventListener('click',()=>{
   const next=generated.find(u=>!u.opened);
   if(!next)return toast('All entries submitted ✓','ok');
