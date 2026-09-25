@@ -93,23 +93,33 @@ a{color:var(--accent2);text-decoration:none}
 .hint b{color:var(--muted)}
 
 /* URL LIST */
-.url-list{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow-y:auto;padding-right:5px}
+.url-list{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow-y:auto;padding-right:5px}
 .url-item{background:linear-gradient(180deg,rgba(10,17,32,.9),rgba(5,8,15,.9));
-  border:1px solid var(--border);border-radius:10px;padding:12px;transition:all .2s;position:relative;
+  border:1px solid var(--border);border-radius:11px;padding:14px;transition:all .2s;position:relative;
   animation:slideIn .3s ease both;overflow:hidden}
 @keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .url-item:hover{border-color:var(--border2);transform:translateY(-1px)}
 .url-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
-  background:linear-gradient(180deg,var(--accent),transparent);opacity:.7}
-.url-item.opened{opacity:.5}
-.url-item.opened::before{background:linear-gradient(180deg,var(--ok),transparent)}
-.url-head{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-.url-date{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);
-  text-shadow:0 0 8px rgba(0,255,163,.5);letter-spacing:.5px}
+  background:linear-gradient(180deg,var(--accent),transparent);opacity:.7;transition:all .3s}
+.url-item.opened{opacity:.55}
+.url-item.opened::before{background:linear-gradient(180deg,var(--ok),transparent);box-shadow:0 0 12px var(--ok)}
+.url-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.url-num-badge{font-family:var(--mono);font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;
+  background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,194,255,.1));color:var(--accent);
+  border:1px solid rgba(0,255,163,.4);text-shadow:0 0 8px rgba(0,255,163,.6)}
+.url-item.opened .url-num-badge{background:rgba(0,255,136,.15);color:var(--ok);border-color:rgba(0,255,136,.4);text-shadow:0 0 8px rgba(0,255,136,.6)}
+.url-date{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);letter-spacing:.5px}
 .url-meta{font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:5px;
   background:var(--bg2);border:1px solid var(--border);color:var(--muted)}
-.url-num{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.url-check{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ok);
+  text-shadow:0 0 8px var(--ok)}
 .url-actions{display:flex;gap:6px;flex-wrap:wrap}
+.submit-big{flex:1;min-width:130px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#02130d;
+  font-weight:800;font-size:12px;padding:9px 16px;border-radius:8px;border:0;cursor:pointer;
+  box-shadow:0 4px 16px -6px rgba(0,255,163,.7);transition:all .18s;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:var(--mono);letter-spacing:.5px}
+.submit-big:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 8px 24px -6px rgba(0,255,163,.95)}
+.url-item.opened .submit-big{background:linear-gradient(135deg,rgba(0,255,136,.9),rgba(0,194,255,.7));opacity:.75}
 
 .empty{text-align:center;padding:50px 20px;border:1px dashed var(--border2);border-radius:13px;background:rgba(10,17,32,.4)}
 .empty .ei{font-size:44px;margin-bottom:10px;opacity:.85;filter:drop-shadow(0 0 18px rgba(0,255,163,.4))}
@@ -120,6 +130,11 @@ a{color:var(--accent2);text-decoration:none}
 .stat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center}
 .stat .n{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--accent);text-shadow:0 0 12px rgba(0,255,163,.5)}
 .stat .l{font-size:9.5px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-top:2px}
+.stat.ok .n{color:var(--ok);text-shadow:0 0 12px rgba(0,255,136,.5)}
+
+.progress{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  width:0%;transition:width .4s ease;box-shadow:0 0 12px rgba(0,255,163,.6)}
 
 .entry-ids{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--mono);font-size:10px;
   background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;color:var(--muted)}
@@ -201,7 +216,7 @@ a{color:var(--accent2);text-decoration:none}
     </div>
 
     <div class="field">
-      <span>Paste Dates / Data (one per line)</span>
+      <span>Paste Dates (one per line)</span>
       <textarea id="fDates" placeholder="2026-07-24
 2026-07-27
 2026-07-29
@@ -211,32 +226,33 @@ a{color:var(--accent2);text-decoration:none}
 
     <div class="hint" style="margin-top:-6px;margin-bottom:12px">
       <b>Accepted formats:</b><br>
-      • <code>2026-07-24</code> — just dates<br>
+      • <code>2026-07-24</code><br>
       • <code>24/07/2026</code> or <code>24-07-2026</code><br>
       • <code>Fri Jul 24 2026 00:00:00 GMT+0530</code><br>
-      • <code>2026-07-24, 12 pm to 2 pm, A</code> — with slot &amp; batch<br>
-      • CSV/comma, tab, newline — all work
+      • <code>2026-07-24, 12 pm to 2 pm, A</code>
     </div>
 
-    <button class="btn primary full" id="generateBtn">⚡ GENERATE_URLS</button>
+    <button class="btn primary full" id="generateBtn">⚡ GENERATE_BUTTONS</button>
 
     <div id="urlInfo" class="hint" style="margin-top:12px;text-align:center"></div>
   </section>
 
   <!-- ══════════ RIGHT: OUTPUT ══════════ -->
   <section class="card">
-    <h2>GENERATED<span class="blink"></span></h2>
+    <h2>SUBMIT_ONE_BY_ONE<span class="blink"></span></h2>
 
     <div class="stats">
       <div class="stat"><div class="n" id="statTotal">0</div><div class="l">TOTAL</div></div>
-      <div class="stat"><div class="n" id="statOpened">0</div><div class="l">OPENED</div></div>
+      <div class="stat ok"><div class="n" id="statOpened">0</div><div class="l">DONE</div></div>
       <div class="stat"><div class="n" id="statLeft">0</div><div class="l">LEFT</div></div>
     </div>
 
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
     <div class="row" style="margin-bottom:14px">
-      <button class="btn primary small" id="openAllBtn">↗ OPEN_ALL</button>
-      <button class="btn outline small" id="copyAllBtn">⧉ COPY_ALL</button>
-      <button class="btn ghost small" id="resetBtn">↺ RESET_OPENED</button>
+      <button class="btn primary small" id="openNextBtn">▶ SUBMIT_NEXT</button>
+      <button class="btn ghost small" id="copyAllBtn">⧉ COPY_ALL</button>
+      <button class="btn ghost small" id="resetBtn">↺ RESET</button>
     </div>
 
     <div id="urlArea"></div>
@@ -267,8 +283,7 @@ a{color:var(--accent2);text-decoration:none}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   AGENT_SUDO // AUTO_FILL
-   Entry IDs hard-coded from your Google Form URL
+   AGENT_SUDO // AUTO_FILL — one-by-one submit
    ═══════════════════════════════════════════════════════════ */
 
 /* ── MATRIX RAIN ── */
@@ -291,8 +306,8 @@ a{color:var(--accent2);text-decoration:none}
 })();
 
 /* ── ENTRY IDS (from your form URL) ── */
-const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
-const ID = {
+const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSfeThWnudmLHyZvzd7euNRls4Yko4SLvtYSHr_lEdsrseKDKg/viewform';
+const ID={
   tutor:'entry.301464598',
   year:'entry.1016980109_year',
   month:'entry.1016980109_month',
@@ -317,26 +332,21 @@ function toast(msg,type=''){
 function parseDate(str){
   if(!str)return null;
   str=String(str).trim();
-  // ISO: 2026-07-24
   let m=str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
   if(m)return {y:+m[1],m:+m[2],d:+m[3]};
-  // Long: Fri Jul 24 2026 00:00:00 GMT+0530
   m=str.match(/([A-Za-z]{3,})\s+(\d{1,2})\s+(\d{4})/);
   if(m){
     const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
     const mm=months[m[1].slice(0,3).toLowerCase()];
     if(mm)return {y:+m[3],m:mm,d:+m[2]};
   }
-  // dd/mm/yyyy or dd-mm-yyyy
   m=str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if(m)return {y:+m[3],m:+m[2],d:+m[1]};
   return null;
 }
-function isoDate(p){
-  return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;
-}
+function isoDate(p){return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;}
 
-/* ── BUILD PREFILLED URL ── */
+/* ── BUILD URL ── */
 function buildUrl({tutor,date,slot,code,batch}){
   const p=parseDate(date);
   if(!p)return '';
@@ -351,51 +361,31 @@ function buildUrl({tutor,date,slot,code,batch}){
   return `${FORM_URL}?${params.toString()}`;
 }
 
-/* ── PARSE PASTED DATA ── */
+/* ── PARSE INPUT ── */
 function parseInput(text){
   const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   const out=[];
   const seen=new Set();
-
   lines.forEach(line=>{
-    // Split by tab first, fallback to comma
     let parts=line.includes('\t')?line.split('\t'):line.split(',');
     parts=parts.map(p=>p.trim());
-
-    // Try to find a date in the parts
-    let dateStr=null, slot=null, batch=null;
-
+    let dateStr=null,slot=null,batch=null;
     for(const p of parts){
       const d=parseDate(p);
-      if(d && !dateStr){
-        dateStr=isoDate(d);
-        continue;
-      }
-      // Slot detection
+      if(d&&!dateStr){dateStr=isoDate(d);continue;}
       if(/^\d+\s*(am|pm)\s*to\s*\d+\s*(am|pm)/i.test(p)){slot=p;continue;}
       if(/saturday/i.test(p)){slot=p;continue;}
-      // Batch detection
-      if(/^[A-F]$/i.test(p) && !batch){batch=p.toUpperCase();continue;}
+      if(/^[A-F]$/i.test(p)&&!batch){batch=p.toUpperCase();continue;}
     }
-
-    if(!dateStr)return; // skip lines without a valid date
-
+    if(!dateStr)return;
     const key=dateStr+'|'+(slot||'')+'|'+(batch||'');
     if(seen.has(key))return;
     seen.add(key);
-
-    out.push({
-      date:dateStr,
-      slot:slot||null,
-      batch:batch||null,
-      original:line
-    });
+    out.push({date:dateStr,slot:slot||null,batch:batch||null});
   });
-
   return out;
 }
 
-/* ── STATE ── */
 let generated=[];
 
 /* ── RENDER ── */
@@ -404,8 +394,8 @@ function render(){
   if(!generated.length){
     area.innerHTML=`<div class="empty">
       <div class="ei">📭</div>
-      <h3>// no_urls_yet</h3>
-      <p>Fill config on the left and click GENERATE_URLS</p>
+      <h3>// no_buttons_yet</h3>
+      <p>Fill config on the left and click GENERATE_BUTTONS</p>
     </div>`;
     updateStats();
     return;
@@ -414,34 +404,36 @@ function render(){
   area.innerHTML=`<div class="url-list">${generated.map((u,i)=>`
     <div class="url-item ${u.opened?'opened':''}" data-idx="${i}">
       <div class="url-head">
+        <span class="url-num-badge">#${i+1}</span>
         <span class="url-date">${esc(u.date)}</span>
         <span class="url-meta">${esc(u.slot)}</span>
         <span class="url-meta">batch ${esc(u.batch)}</span>
         <span class="url-meta" style="color:var(--accent)">${esc(u.code)}</span>
-        <span class="url-num">#${i+1} ${u.opened?'✓':''}</span>
+        ${u.opened?'<span class="url-check">✓ DONE</span>':''}
       </div>
       <div class="url-actions">
-        <a class="btn primary small" href="${esc(u.url)}" target="_blank" rel="noopener" data-open="${i}">↗ OPEN_FORM</a>
-        <button class="btn ghost small" data-copy="${esc(u.url)}">⧉ COPY_URL</button>
+        <a class="submit-big" href="${esc(u.url)}" target="_blank" rel="noopener" data-open="${i}">
+          ${u.opened?'✓ OPEN_AGAIN':'⚡ SUBMIT #'+(i+1)}
+        </a>
+        <button class="btn ghost small" data-copy="${esc(u.url)}">⧉ URL</button>
         <button class="btn ghost small" data-copydate="${esc(u.date)}">⧉ DATE</button>
       </div>
     </div>
   `).join('')}</div>`;
 
-  // Wire open — mark as opened
+  // Mark opened when clicked
   $$('#urlArea [data-open]').forEach(a=>a.addEventListener('click',()=>{
     const i=+a.dataset.open;
-    if(generated[i])generated[i].opened=true;
-    setTimeout(render,200);
+    if(generated[i]){
+      generated[i].opened=true;
+      setTimeout(render,250);
+    }
   }));
 
-  // Copy URL
   $$('#urlArea [data-copy]').forEach(b=>b.addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText(b.dataset.copy);toast('URL copied ✓','ok');}
     catch{toast('Copy failed','error');}
   }));
-
-  // Copy date only
   $$('#urlArea [data-copydate]').forEach(b=>b.addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText(b.dataset.copydate);toast('Date copied','ok');}
     catch{toast('Copy failed','error');}
@@ -456,6 +448,8 @@ function updateStats(){
   $('#statTotal').textContent=t;
   $('#statOpened').textContent=o;
   $('#statLeft').textContent=t-o;
+  const pct=t?Math.round((o/t)*100):0;
+  $('#progressBar').style.width=pct+'%';
 }
 
 /* ── GENERATE ── */
@@ -477,47 +471,39 @@ $('#generateBtn').addEventListener('click',()=>{
     const slot=r.slot||defSlot;
     const batch=r.batch||defBatch;
     return {
-      date:r.date,
-      slot,
-      batch,
-      code,
-      tutor,
+      date:r.date,slot,batch,code,tutor,
       url:buildUrl({tutor,date:r.date,slot,code,batch}),
       opened:false
     };
   });
 
   render();
-  $('#urlInfo').innerHTML=`✓ Generated <b style="color:var(--accent)">${generated.length}</b> URL(s)`;
-  toast(`Generated ${generated.length} URLs ✓`,'ok');
+  $('#urlInfo').innerHTML=`✓ Generated <b style="color:var(--accent)">${generated.length}</b> submit buttons`;
+  toast(`Generated ${generated.length} buttons ✓`,'ok');
 });
 
-/* ── OPEN ALL ── */
-$('#openAllBtn').addEventListener('click',()=>{
-  const pending=generated.filter(u=>!u.opened);
-  if(!pending.length)return toast('All URLs already opened','warn');
-  if(!confirm(`Open ${pending.length} form(s) in new tabs?\n\nNote: enable popups for this site.`))return;
-
-  pending.forEach((u,i)=>{
-    setTimeout(()=>{
-      window.open(u.url,'_blank');
-      u.opened=true;
-      if(i===pending.length-1)setTimeout(render,300);
-    },i*350);
-  });
-  toast(`Opening ${pending.length} tabs…`,'ok');
+/* ── SUBMIT NEXT (opens only ONE tab) ── */
+$('#openNextBtn').addEventListener('click',()=>{
+  const next=generated.find(u=>!u.opened);
+  if(!next)return toast('All entries submitted ✓','ok');
+  window.open(next.url,'_blank');
+  next.opened=true;
+  setTimeout(render,250);
+  const left=generated.filter(u=>!u.opened).length;
+  toast(`Opened ${next.date} — ${left} left`,'ok');
 });
 
 /* ── COPY ALL ── */
 $('#copyAllBtn').addEventListener('click',async()=>{
-  if(!generated.length)return toast('Generate URLs first','warn');
-  const text=generated.map(u=>`${u.date}\t${u.slot}\t${u.batch}\t${u.code}\t${u.tutor}\t${u.url}`).join('\n');
-  try{await navigator.clipboard.writeText(text);toast('All URLs copied ✓','ok');}
+  if(!generated.length)return toast('Generate buttons first','warn');
+  const text=generated.map((u,i)=>`#${i+1}\t${u.date}\t${u.slot}\t${u.batch}\t${u.code}\t${u.tutor}\t${u.url}`).join('\n');
+  try{await navigator.clipboard.writeText(text);toast('All copied ✓','ok');}
   catch{toast('Copy failed','error');}
 });
 
 /* ── RESET ── */
 $('#resetBtn').addEventListener('click',()=>{
+  if(!confirm('Reset all opened marks?'))return;
   generated.forEach(u=>u.opened=false);
   render();
   toast('Reset ✓','ok');
